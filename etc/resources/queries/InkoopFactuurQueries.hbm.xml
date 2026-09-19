@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<query name="inkoop_factuur.selectAll">
+        <![CDATA[select s from InkoopFactuur as s order by s.id asc]]>
+    </query>
+	
+    <query name="inkoop_factuur.selectByKlantId">
+        <![CDATA[from InkoopFactuur as s where s.relatieId = :RelatieId order by s.id asc]]>
+    </query>
+
+    <query name="inkoop_factuur.selectZonderKlant">
+        <![CDATA[from InkoopFactuur as s where s.relatieId is null order by s.id asc]]>
+    </query>
+
+    <query name="inkoop_factuur.selectCountKlanten">
+        <![CDATA[select count(relatieId) from InkoopFactuur as c where c.relatieId = :Id]]>
+    </query>
+
+    <query name="inkoop_factuur.selectByIds">
+        <![CDATA[select f from InkoopFactuur as f where id in (:ids)]]>
+    </query>
+
+    <query name="inkoop_factuur.selectEersteHerinneringen">
+        <![CDATA[from InkoopFactuur as s
+                    where s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and (s.eersteHerinnering is null 
+					  or   (year(s.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(s.eersteHerinnering) = month(:HerinneringDatum)
+						and day(s.eersteHerinnering) = day(:HerinneringDatum))
+                      and s.tweedeHerinnering is null
+                      and s.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="inkoop_factuur.selectTweedeHerinneringen">
+        <![CDATA[from InkoopFactuur as s
+                    where s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and s.eersteHerinnering is not null
+                      and (s.tweedeHerinnering is null 
+					  or   (year(s.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(s.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(s.tweedeHerinnering) = day(:HerinneringDatum))
+                      and s.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="inkoop_factuur.maandoverzicht">
+        <![CDATA[from InkoopFactuur as s
+                    join s.betalingen as b
+                    where not b.betaalDatum is null
+					  and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                 order by s.factuurNummer]]>
+    </query>
+    
+    <query name="inkoop_factuur.debiteurenoverzicht">
+        <![CDATA[from InkoopFactuur as s
+                    where s.totaalBedrag - s.totaalBetaald > 0
+					  and not s.factuurDatum is null
+					  and s.factuurDatum <= :Datum
+                 order by s.factuurNummer]]>
+    </query>
+    
+    <query name="inkoop_factuur.kasboekoverzicht">
+        <![CDATA[from InkoopFactuur as s
+                    join s.betalingen as betaling
+                    where (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                 order by s.factuurNummer]]>
+    </query>
+    
+    <query name="inkoop_factuur.kasboekFacturen">
+        <![CDATA[select f 
+                    from InkoopFactuur as f  
+                    join f.betalingen as b
+                    where (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+						and b.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

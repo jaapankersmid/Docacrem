@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+    
+    <query name="producten.selectByCategorieId">
+        <![CDATA[select p from Product as p 
+				 where p.productCategorieId = :CategorieId
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectPensionProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Pension'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectPensionCrecheProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Creche'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectPensionDienstProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Dienst'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectSalonProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Salon'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectShopProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Shop'
+                   or  c.id >= 10000
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectCrematoriumProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Crematorium'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectAsielProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Asiel'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectKasBoekProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Alles' 
+                   or  c.naam = 'Kasboek'
+                 order by p.naam]]>
+    </query>
+    
+    <query name="producten.selectInkoopProducten">
+        <![CDATA[select p from Product as p 
+				 inner join p.productCategorieId as c
+                 where c.naam = 'Inkoop'
+                 order by p.naam]]>
+    </query>
+
+</hibernate-mapping>

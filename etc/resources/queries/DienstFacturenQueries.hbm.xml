@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="dienst_facturen.selectByContractId">
+        <![CDATA[select f from DienstFactuur as f where f.contractId = :ContractId order by f.factuurNummer asc]]>
+    </query>
+
+    <query name="dienst_facturen.selectByKlantId">
+        <![CDATA[select f from DienstFactuur as f where f.klantId = :KlantId order by f.id asc]]>
+    </query>
+
+    <query name="dienst_facturen.selectByKlantIdOrderByFactuurDatumDesc">
+        <![CDATA[select f from DienstFactuur as f where f.klantId = :KlantId order by f.factuurDatum desc]]>
+    </query>
+    
+    <query name="dienst_facturen.kasboekFacturen">
+        <![CDATA[select distinct f 
+                    from DienstFactuur as f 
+                    where (not f.voorschotDatum is null
+						and f.voorschotDatum >= :BeginDatum
+						and f.voorschotDatum <= :EindDatum
+						or
+						not f.betaalDatum is null
+						and f.betaalDatum >= :BeginDatum
+						and f.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

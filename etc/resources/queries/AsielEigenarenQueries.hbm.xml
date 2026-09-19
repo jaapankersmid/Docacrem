@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="asiel_eigenaren.selectByAchternaamAndAdres">
+        <![CDATA[from AsielEigenaar as ae
+                 where lower(ae.achternaam) = lower(:Achternaam)
+                   and lower(ae.adresId.huisnummer) = lower(:Huisnummer)
+                   and lower(ae.adresId.postcode) = lower(:Postcode)]]>
+    </query>
+
+    <query name="asiel_eigenaren.selectCountKlantEigenaarSoort">
+        <![CDATA[select count(k.klantEigenaarSoortId) from AsielEigenaar as k where k.klantEigenaarSoortId = :Id]]>
+    </query>
+
+    <query name="asiel_eigenaren.searchAsielEigenaren">
+        <![CDATA[select distinct ae from AsielEigenaar as ae
+                   join ae.adresId as adres
+                   join ae.contactId as contact
+                 where lower((case when length(ae.aanhef) > 0 then (ae.aanhef||' ') else ('') end)||
+                             (case when length(ae.voorletters) > 0 then (ae.voorletters||' ') else ('') end)||
+                             (case when length(ae.tussenvoegsel) > 0 then (ae.tussenvoegsel||' ') else ('') end)||
+                             ae.achternaam) like lower(:ZoekWaarde) or
+                       lower(adres.straat) like lower(:ZoekWaarde) or
+                       lower(adres.postcode) like lower(:ZoekWaarde) or
+                       lower(adres.woonplaats) like lower(:ZoekWaarde) or
+                       contact.telefoonnummer like :ZoekWaarde
+                 order by ae.achternaam]]>
+    </query>
+
+    <query name="asiel_eigenaren.selectAmersfoortData">
+        <![CDATA[select eigenaar 
+					from AsielEigenaar as eigenaar 
+					join eigenaar.adresId as adres
+					join eigenaar.contactId as contact
+					where eigenaar.achternaam = :Achternaam
+					  and adres.straat = :Straat
+					  and adres.huisnummer = :Huisnummer
+					  and adres.postcode = :Postcode
+					  and adres.woonplaats = :Woonplaats
+					  and contact.telefoonnummer = :Telefoonnummer]]>
+    </query>
+
+</hibernate-mapping>

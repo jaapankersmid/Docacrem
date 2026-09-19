@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="klanten.selectByDierId">
+        <![CDATA[select k 
+                 from Klant as k 
+                 inner join k.dieren as dier
+                 where dier.id = :DierId]]>
+    </query>
+    
+    <query name="klanten.selectByAchternaamAndAdres">
+        <![CDATA[from Klant as k
+                 where lower(k.achternaam) = lower(:Achternaam)
+                   and lower(k.adresId.huisnummer) = lower(:Huisnummer)
+                   and lower(k.adresId.postcode) = lower(:Postcode)]]>
+    </query>
+    
+    <query name="klanten.selectByPostcodeAndHuisnummer">
+        <![CDATA[from Klant as k
+                 where lower(k.adresId.huisnummer) = lower(:Huisnummer)
+                   and lower(k.adresId.postcode) like lower(:Postcode)]]>
+    </query>
+    
+    <query name="klanten.selectByEmailadres">
+        <![CDATA[from Klant as k
+                 where lower(k.emailAdres) = lower(:EmailAdres)]]>
+    </query>
+
+    <query name="klanten.selectCountKleurCodes">
+        <![CDATA[select count(k.kleurCodeId) from Klant as k where k.kleurCodeId = :Id]]>
+    </query>
+
+    <query name="klanten.selectCountKlantEigenaarSoort">
+        <![CDATA[select count(k.klantEigenaarSoortId) from Klant as k where k.klantEigenaarSoortId = :Id]]>
+    </query>
+
+    <query name="klanten.searchKlanten">
+        <![CDATA[select distinct k
+                 from Klant as k
+                   join k.adresId as adres
+                   join k.contactId as contact
+                   left join k.dieren as dier
+                 where lower(k.naamBedrijf) like lower(:ZoekWaarde) or
+                       lower((case when length(k.aanhef) > 0 then (k.aanhef||' ') else ('') end)||
+                             (case when length(k.voorletters) > 0 then (k.voorletters||' ') else ('') end)||
+                             (case when length(k.tussenvoegsel) > 0 then (k.tussenvoegsel||' ') else ('') end)||
+                             k.achternaam) like lower(:ZoekWaarde) or
+                       lower(k.achternaam) like lower(:ZoekWaarde) or
+                       lower(k.legitimatieNummer) like lower(:ZoekWaarde) or
+                       lower(adres.straat) like lower(:ZoekWaarde) or
+                       lower(adres.postcode) like lower(:ZoekWaarde) or
+                       lower(adres.woonplaats) like lower(:ZoekWaarde) or
+                       contact.telefoonnummer like :ZoekWaarde or
+                       contact.mobielnummer like :ZoekWaarde
+                 order by k.achternaam, dier.naam]]>
+    </query>
+
+    <query name="klanten.searchKlantenAndVoornaam">
+        <![CDATA[select distinct k
+                 from Klant as k
+                   join k.adresId as adres
+                   join k.contactId as contact
+                   left join k.dieren as dier
+                 where lower(k.naamBedrijf) like lower(:ZoekWaarde) or
+                       lower((case when length(k.aanhef) > 0 then (k.aanhef||' ') else ('') end)||
+                             (case when length(k.voorletters) > 0 then (k.voorletters||' ') else ('') end)||
+                             (case when length(k.tussenvoegsel) > 0 then (k.tussenvoegsel||' ') else ('') end)||
+                             k.achternaam) like lower(:ZoekWaarde) or
+                       lower(k.achternaam) like lower(:ZoekWaarde) or
+                       lower(k.voornaam) like lower(:ZoekWaarde) or
+                       lower(k.legitimatieNummer) like lower(:ZoekWaarde) or
+                       lower(adres.straat) like lower(:ZoekWaarde) or
+                       lower(adres.postcode) like lower(:ZoekWaarde) or
+                       lower(adres.woonplaats) like lower(:ZoekWaarde) or
+                       contact.telefoonnummer like :ZoekWaarde or
+                       contact.mobielnummer like :ZoekWaarde
+                 order by k.achternaam, dier.naam]]>
+    </query>
+
+    <query name="klanten.searchKlantenByAchternaam">
+        <![CDATA[select distinct k
+                 from Klant as k
+                 where lower(k.achternaam) like lower(:ZoekWaarde)
+                 order by k.achternaam]]>
+    </query>
+
+    <query name="klanten.searchKlantenByEmail">
+        <![CDATA[select distinct k
+                 from Klant as k
+                 where lower(k.emailAdres) like lower(:ZoekWaarde)
+                 order by k.achternaam]]>
+    </query>
+
+</hibernate-mapping>

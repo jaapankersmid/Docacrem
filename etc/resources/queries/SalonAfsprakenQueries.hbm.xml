@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="salonafspraken.selectByFactuurNummer">
+        <![CDATA[from SalonAfspraak as s where s.factuurNummer = :FactuurNummer]]>
+    </query>
+
+    <query name="salonafspraken.selectByKlantIdOrderByFactuurDatumDesc">
+        <![CDATA[from SalonAfspraak as s where s.klantId = :KlantId order by s.factuurDatum desc]]>
+    </query>
+
+    <query name="salonafspraken.selectByKlantId">
+        <![CDATA[from SalonAfspraak as s where s.klantId = :KlantId order by s.id asc]]>
+    </query>
+
+    <query name="salonafspraken.selectCountKlanten">
+        <![CDATA[select count(klantId) from SalonAfspraak as s where s.klantId = :Id]]>
+    </query>
+
+    <query name="salonafspraken.selectByIds">
+        <![CDATA[select f from SalonAfspraak as f where id in (:ids)]]>
+    </query>
+
+    <query name="salonafspraken.selectSalonWerkzaamheden">
+        <![CDATA[select distinct f from SalonAfspraak as f 
+            inner join f.afspraakRegels as regel
+            inner join regel.dierId as dier
+             where (f.beginTijd > :Datum1 and f.beginTijd < :Datum2 
+                or (f.beginTijd is null and f.beginTijd > :Datum1 and f.beginTijd < :Datum2))
+            order by dier.naam]]>
+    </query>
+
+    <query name="salonafspraken.selectSalonWerkzaamhedenKalender">
+        <![CDATA[select f from SalonAfspraak as f 
+             where (not f.beginTijd is null and 
+						((year(f.beginTijd) = year(:Datum))
+					    and month(f.beginTijd) = month(:Datum)
+						and day(f.beginTijd) = day(:Datum))) 
+                or (f.beginTijd is null and 
+						((year(f.eindTijd) = year(:Datum))
+					    and month(f.eindTijd) = month(:Datum)
+						and day(f.eindTijd) = day(:Datum)))
+            order by f.beginTijd, f.eindTijd]]>
+    </query>
+
+    <query name="salonafspraken.selectEersteHerinneringen">
+        <![CDATA[from SalonAfspraak as s
+                    where s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and (s.eersteHerinnering is null 
+					  or   (year(s.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(s.eersteHerinnering) = month(:HerinneringDatum)
+						and day(s.eersteHerinnering) = day(:HerinneringDatum))
+                      and s.tweedeHerinnering is null
+                      and s.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="salonafspraken.selectTweedeHerinneringen">
+        <![CDATA[from SalonAfspraak as s
+                    where s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and s.eersteHerinnering is not null
+                      and (s.tweedeHerinnering is null 
+					  or   (year(s.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(s.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(s.tweedeHerinnering) = day(:HerinneringDatum))
+                      and s.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="salonafspraken.maandoverzicht">
+        <![CDATA[select distinct(f) from SalonAfspraak as f
+					join f.betalingen as b
+                    where f.geannuleerd = false 
+					  and not b.betaalDatum is null
+					  and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="salonafspraken.debiteurenoverzicht">
+        <![CDATA[select distinct(f) from SalonAfspraak as f
+                    where f.geannuleerd = false 
+					  and f.totaalBedrag - f.totaalBetaald > 0
+					  and not f.factuurDatum is null
+					  and f.factuurDatum <= :Datum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="salonafspraken.kasboekoverzicht">
+        <![CDATA[select distinct f from SalonAfspraak as f
+                    join f.betalingen as betaling
+                    where f.geannuleerd = false
+					    and (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="salonafspraken.kasboekFacturen">
+        <![CDATA[select distinct f 
+                    from SalonAfspraak as f  
+                    join f.betalingen as b
+                    where (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+						and b.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

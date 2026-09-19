@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="diersoorten.selectById">
+        <![CDATA[from Diersoort as d where d.id = :Id]]>
+    </query>
+ 
+    <query name="diersoorten.selectDiersoortByRasNaam">
+        <![CDATA[select d
+                   from Diersoort as d
+                     join d.rassen as ras
+                   where ras.naam = :Naam]]>
+    </query>
+    
+</hibernate-mapping>

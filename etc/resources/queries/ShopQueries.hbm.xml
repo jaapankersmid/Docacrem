@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="shop.selectByKlantId">
+        <![CDATA[from Shop as s where s.klantId = :KlantId order by s.id asc]]>
+    </query>
+
+    <query name="shop.selectByKlantIdOrderByFactuurDatumDesc">
+        <![CDATA[from Shop as s where s.klantId = :KlantId order by s.factuurDatum desc]]>
+    </query>
+
+    <query name="shop.selectZonderKlant">
+        <![CDATA[from Shop as s where s.klantId is null order by s.id asc]]>
+    </query>
+
+    <query name="shop.selectCountKlanten">
+        <![CDATA[select count(klantId) from Shop as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="shop.selectByIds">
+        <![CDATA[select f from Shop as f where id in (:ids)]]>
+    </query>
+
+    <query name="shop.selectEersteHerinneringen">
+        <![CDATA[from Shop as s
+                    where s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and (s.eersteHerinnering is null 
+					  or   (year(s.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(s.eersteHerinnering) = month(:HerinneringDatum)
+						and day(s.eersteHerinnering) = day(:HerinneringDatum))
+                      and s.tweedeHerinnering is null
+                      and s.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="shop.selectTweedeHerinneringen">
+        <![CDATA[from Shop as s
+                    where s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and s.eersteHerinnering is not null
+                      and (s.tweedeHerinnering is null 
+					  or   (year(s.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(s.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(s.tweedeHerinnering) = day(:HerinneringDatum))
+                      and s.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="shop.maandoverzicht">
+        <![CDATA[select distinct(f) from Shop as f
+					join f.betalingen as b
+                    where not b.betaalDatum is null
+					  and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="shop.debiteurenoverzicht">
+        <![CDATA[select distinct(f) from Shop as f
+                    where f.totaalBedrag - f.totaalBetaald > 0
+					  and not f.factuurDatum is null
+					  and f.factuurDatum <= :Datum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="shop.kasboekoverzicht">
+        <![CDATA[select distinct f from Shop as f
+                    join f.betalingen as betaling
+                    where (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="shop.kasboekFacturen">
+        <![CDATA[select distinct f 
+                    from Shop as f  
+                    join f.betalingen as b
+                    where (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+						and b.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

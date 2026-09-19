@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="asiel_vragen.selectByVraagSoort">
+        <![CDATA[select av 
+                from AsielVraag as av 
+                left join av.diersoortId as diersoort
+                where av.vraagSoort = :VraagSoort 
+                order by av.positie]]>
+    </query>
+
+    <query name="asiel_vragen.selectCountAntwoorden">
+        <![CDATA[select count(a.asielVraagId) from AsielAntwoord as a where a.asielVraagId = :Id]]>
+    </query>
+
+    <query name="asiel_vragen.selectByVraagEnDiersoort">
+        <![CDATA[select distinct av from AsielVraag as av 
+                 left join av.diersoortId as d 
+                 where av.vraagSoort = :VraagSoort 
+                   and (av.diersoortId is null or d.naam = :Diersoort) 
+                 order by av.positie]]>
+    </query>
+
+</hibernate-mapping>

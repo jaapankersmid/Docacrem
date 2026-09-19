@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="kantine_bonnen.selectByKlantId">
+        <![CDATA[from KantineBon as s where s.klantId = :KlantId order by s.id asc]]>
+    </query>
+
+    <query name="kantine_bonnen.selectZonderKlant">
+        <![CDATA[from KantineBon as s where s.klantId is null order by s.id asc]]>
+    </query>
+
+    <query name="kantine_bonnen.selectCountKlanten">
+        <![CDATA[select count(klantId) from KantineBon as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="kantine_bonnen.selectByIds">
+        <![CDATA[select f from KantineBon as f where id in (:ids)]]>
+    </query>
+
+    <query name="kantine_bonnen.selectByDag">
+        <![CDATA[select f from KantineBon as f where f.factuurDatum = :Dag]]>
+    </query>
+
+    <query name="kantine_bonnen.selectEersteHerinneringen">
+        <![CDATA[from KantineBon as s
+                    where s.betaalDatum is null
+					  and s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and (s.eersteHerinnering is null 
+					  or   (year(s.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(s.eersteHerinnering) = month(:HerinneringDatum)
+						and day(s.eersteHerinnering) = day(:HerinneringDatum))
+                      and s.tweedeHerinnering is null
+                      and s.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="kantine_bonnen.selectTweedeHerinneringen">
+        <![CDATA[from KantineBon as s
+                    where s.betaalDatum is null
+					  and s.openstaandBedrag > 0
+                      and s.factuurDatum is not null
+                      and s.eersteHerinnering is not null
+                      and (s.tweedeHerinnering is null 
+					  or   (year(s.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(s.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(s.tweedeHerinnering) = day(:HerinneringDatum))
+                      and s.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="kantine_bonnen.maandoverzicht">
+        <![CDATA[from KantineBon as s
+                    where (not s.betaalDatum is null
+                      and s.betaalDatum >= :BeginDatum
+                      and s.betaalDatum <= :EindDatum)
+					  or (s.openstaandBedrag = 0
+					  and s.voorschotDatum >= :BeginDatum
+                      and s.voorschotDatum <= :EindDatum)
+                 order by s.factuurNummer]]>
+    </query>
+    
+    <query name="kantine_bonnen.debiteurenoverzicht">
+        <![CDATA[from KantineBon as s
+                    where s.betaalDatum is null
+					  and s.openstaandBedrag > 0
+                      and not s.factuurDatum is null
+                      and s.factuurDatum <= :Datum
+                 order by s.factuurNummer]]>
+    </query>
+    
+    <query name="kantine_bonnen.kasboekoverzicht">
+        <![CDATA[from KantineBon as s
+                    where (not s.betaalDatum is null
+                        and s.betaalDatum >= :BeginDatum
+                        and s.betaalDatum <= :EindDatum
+                        and :Kasboeksoort = 'Voldaan')
+                      or
+                           (not s.voorschotDatum is null
+                        and s.voorschotDatum >= :BeginDatum
+                        and s.voorschotDatum <= :EindDatum
+                        and :Kasboeksoort = 'Voorschot')
+                 order by s.factuurNummer]]>
+    </query>
+    
+    <query name="kantine_bonnen.kasboekFacturen">
+        <![CDATA[select f 
+                    from KantineBon as f  
+                    where ((not f.betaalDatum is null 
+					  and year(f.betaalDatum) = year(:beginDatum)
+					  and month(f.betaalDatum) = month(:beginDatum)
+                      and day(f.betaalDatum) = day(:beginDatum))
+                      or
+                      (not f.voorschotDatum is null 
+					  and year(f.voorschotDatum) = year(:beginDatum)
+					  and month(f.voorschotDatum) = month(:beginDatum)
+                      and day(f.voorschotDatum) = day(:beginDatum)))]]>
+    </query>
+
+</hibernate-mapping>

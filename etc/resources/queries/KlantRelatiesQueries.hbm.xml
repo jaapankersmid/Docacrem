@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="klant_relaties.selectByKlantId">
+        <![CDATA[from KlantRelatie as ls where ls.linkerRelatieId = :KlantId or ls.rechterRelatieId = :KlantId]]>
+    </query>
+
+    <query name="klant_relaties.selectKlantRelatieBestaat">
+        <![CDATA[from KlantRelatie as ls 
+                where (ls.linkerRelatieId = :KlantA and ls.rechterRelatieId = :KlantB)
+                  or (ls.linkerRelatieId = :KlantB and ls.rechterRelatieId = :KlantA)]]>
+    </query>
+
+</hibernate-mapping>

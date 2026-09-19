@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="dienst_reserveringen.selectByContractId">
+        <![CDATA[select f from DienstReservering as f where f.contractId = :ContractId order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="dienst_reserveringen.selectByContractIdAndDatum">
+        <![CDATA[select f from DienstReservering as f where f.contractId = :ContractId and f.gereserveerdVan >= :BeginDatum and f.gereserveerdTot < :EindDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="dienst_reserveringen.selectByDatumExpressie">
+        <![CDATA[from DienstReservering as d where d.gereserveerdVan >= :BeginDatum and d.gereserveerdTot <= :EindDatum]]>
+    </query>
+
+</hibernate-mapping>

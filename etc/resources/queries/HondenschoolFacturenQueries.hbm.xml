@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="hondenschool_facturen.selectByKlantId">
+        <![CDATA[from HondenschoolFactuur as c where c.klantId = :KlantId order by c.id asc]]>
+    </query>
+    
+    <query name="hondenschool_facturen.selectByKlantIdOrderByFactuurDatumDesc">
+        <![CDATA[from HondenschoolFactuur as c where c.klantId = :KlantId order by c.factuurDatum desc]]>
+    </query>
+
+    <query name="hondenschool_facturen.selectByDierId">
+        <![CDATA[from HondenschoolFactuur as c where c.dierId = :DierId order by c.factuurNummer asc]]>
+    </query>
+
+    <query name="hondenschool_facturen.selectCountKlanten">
+        <![CDATA[select count(klantId) from HondenschoolFactuur as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="hondenschool_facturen.selectCountHondenschoolCursus">
+        <![CDATA[select count(hondenschoolCursusId) from HondenschoolFactuur as c where c.hondenschoolCursusId = :Id]]>
+    </query>
+
+    <query name="hondenschool_facturen.selectByIds">
+        <![CDATA[select f from HondenschoolFactuur as f where id in (:ids)]]>
+    </query>
+
+    <query name="hondenschool_facturen.selectEersteHerinneringen">
+        <![CDATA[from HondenschoolFactuur as c
+                    where c.factuurDatum is not null
+                      and (c.eersteHerinnering is null 
+					  or   (year(c.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(c.eersteHerinnering) = month(:HerinneringDatum)
+						and day(c.eersteHerinnering) = day(:HerinneringDatum))
+                      and c.tweedeHerinnering is null
+                      and c.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="hondenschool_facturen.selectTweedeHerinneringen">
+        <![CDATA[from HondenschoolFactuur as c
+                    where c.factuurDatum is not null
+                      and c.eersteHerinnering is not null
+                      and (c.tweedeHerinnering is null 
+					  or   (year(c.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(c.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(c.tweedeHerinnering) = day(:HerinneringDatum))
+                      and c.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="hondenschool_facturen.maandoverzicht">
+        <![CDATA[select distinct(f) from HondenschoolFactuur as f
+					join f.betalingen as b
+                    where not b.betaalDatum is null
+					  and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="hondenschool_facturen.debiteurenoverzicht">
+        <![CDATA[select distinct(f) from HondenschoolFactuur as f
+                    where f.totaalBedrag - f.totaalBetaald > 0
+					  and not f.factuurDatum is null
+					  and f.factuurDatum <= :Datum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="hondenschool_facturen.kasboekoverzicht">
+        <![CDATA[select distinct f from HondenschoolFactuur as f
+                    join f.betalingen as betaling
+                    where (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="hondenschool_facturen.kasboekFacturen">
+        <![CDATA[select distinct f 
+                    from HondenschoolFactuur as f  
+                    join f.betalingen as b
+                    where (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+						and b.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="asiel_verblijven.searchAsielVerblijvenOpVindplaats">
+        <![CDATA[select k
+                 from AsielVerblijf as k
+                 where lower(k.vindplaats) like lower(:Vindplaats)
+                 order by k.verblijfNummer, k.vindplaats]]>
+    </query>
+
+    <query name="asiel_verblijven.selectByAsielDierId">
+        <![CDATA[from AsielVerblijf as av where av.asielDierId = :AsielDierId order by av.id asc]]>
+    </query>
+
+    <query name="asiel_verblijven.selectBezetting">
+        <![CDATA[from AsielVerblijf as av 
+			 where (av.opnameDatum <= :BeginDatum and (av.vertrekDatum is null or av.vertrekDatum >= :EindDatum))
+                     or (av.opnameDatum >= :BeginDatum and av.opnameDatum <= :EindDatum)
+                     or (av.vertrekDatum >= :BeginDatum and av.vertrekDatum <= :EindDatum)]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountSectoren">
+        <![CDATA[select count(kennelId) from AsielVerblijf as f where f.kennelId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectDierenInAsiel">
+        <![CDATA[from AsielVerblijf as av 
+			 where av.vertrekDatum is null or av.vertrekDatum >= :EindDatum]]>
+    </query>
+
+    <query name="asiel_verblijven.selectPleeggezinByAsielEigenaarId">
+        <![CDATA[from AsielVerblijf as av 
+                    where av.pleegGezinId = :AsielEigenaarId 
+                 order by av.id desc]]>
+    </query>
+
+    <query name="asiel_verblijven.selectByAsielEigenaarId">
+        <![CDATA[from AsielVerblijf as av 
+                    where av.eigenaarInId = :AsielEigenaarId 
+                      or av.brengerInId = :AsielEigenaarId 
+                      or av.betalerInId = :AsielEigenaarId 
+                      or av.eigenaarUitId = :AsielEigenaarId 
+                      or av.brengerUitId = :AsielEigenaarId 
+                      or av.betalerUitId = :AsielEigenaarId 
+                 order by av.id desc]]>
+    </query>
+
+    <query name="asiel_verblijven.selectQuarantaine">
+        <![CDATA[select av from AsielVerblijf as av
+                   inner join av.asielVerblijfStatusId as status
+                   inner join av.asielDierId as dier
+                   inner join dier.rasId as ras
+                   inner join ras.diersoortId as diersoort
+                 where status.naam='Quarantaine'
+                   and diersoort.naam=:Diersoort
+                   and (av.vertrekDatum is null or av.vertrekDatum > :EindDatum)]]>
+    </query>
+
+    <query name="asiel_verblijven.selectQuarantaineNotDiersoort">
+        <![CDATA[select av from AsielVerblijf as av
+                   inner join av.asielVerblijfStatusId as status
+                   inner join av.asielDierId as dier
+                   inner join dier.rasId as ras
+                   inner join ras.diersoortId as diersoort
+                 where status.naam='Quarantaine'
+                   and diersoort.naam<>:Diersoort1
+                   and diersoort.naam<>:Diersoort2
+                   and (av.vertrekDatum is null or av.vertrekDatum > :EindDatum)]]>
+    </query>
+
+    <query name="asiel_verblijven.selectZiekenboeg">
+        <![CDATA[select av from AsielVerblijf as av
+                   inner join av.asielVerblijfStatusId as status
+                   inner join av.asielDierId as dier
+                   inner join dier.rasId as ras
+                   inner join ras.diersoortId as diersoort
+                 where status.naam='Ziekenboeg'
+                   and diersoort.naam=:Diersoort
+                   and (av.vertrekDatum is null or av.vertrekDatum > :EindDatum)]]>
+    </query>
+
+    <query name="asiel_verblijven.selectZiekenboegNotDiersoort">
+        <![CDATA[select av from AsielVerblijf as av
+                   inner join av.asielVerblijfStatusId as status
+                   inner join av.asielDierId as dier
+                   inner join dier.rasId as ras
+                   inner join ras.diersoortId as diersoort
+                 where status.naam='Ziekenboeg'
+                   and diersoort.naam<>:Diersoort1
+                   and diersoort.naam<>:Diersoort2
+                   and (av.vertrekDatum is null or av.vertrekDatum > :EindDatum)]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountDieren">
+        <![CDATA[select count(asielDierId) from AsielVerblijf as av where av.asielDierId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountEigenaarIn">
+        <![CDATA[select count(eigenaarInId) from AsielVerblijf as av where av.eigenaarInId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountBrengerIn">
+        <![CDATA[select count(brengerInId) from AsielVerblijf as av where av.brengerInId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountBetalerIn">
+        <![CDATA[select count(betalerInId) from AsielVerblijf as av where av.betalerInId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountEigenaarUit">
+        <![CDATA[select count(eigenaarUitId) from AsielVerblijf as av where av.eigenaarUitId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountBrengerUit">
+        <![CDATA[select count(brengerUitId) from AsielVerblijf as av where av.brengerUitId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountBetalerUit">
+        <![CDATA[select count(betalerUitId) from AsielVerblijf as av where av.betalerUitId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountGemeenten">
+        <![CDATA[select count(gemeenteId) from AsielVerblijf as av where av.gemeenteId = :Id]]>
+    </query>
+
+    <query name="asiel_verblijven.selectCountDierenAmbulance">
+        <![CDATA[select count(dierenAmbulanceInId) from AsielVerblijf as av where av.dierenAmbulanceInId = :Id]]>
+    </query>
+
+</hibernate-mapping>

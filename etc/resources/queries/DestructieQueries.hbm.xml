@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+    
+    <query name="destructie.selectByDierenartsId">
+        <![CDATA[select d from Destructie as d 
+				 where d.dierenartsId = :dierenartsId
+                 order by d.code]]>
+    </query>
+	
+	<query name="destructie.selectByDestructieRegelId">
+        <![CDATA[select d from Destructie as d 
+		         join d.regels as r
+				 where r.id = :destructieRegelId]]>
+    </query>
+
+</hibernate-mapping>

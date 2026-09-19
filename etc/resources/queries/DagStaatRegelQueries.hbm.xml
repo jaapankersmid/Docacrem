@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="dag_staat_regel.selectByTransactieDatum">
+        <![CDATA[from DagStaatRegel as d 
+				where d.transactieDatum >= :BeginDatum and d.transactieDatum <= :EindDatum
+                  and d.dagBoekId = :DagBoekId
+				order by d.boekstukNummer]]>
+    </query>
+
+</hibernate-mapping>

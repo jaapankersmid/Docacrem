@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="asiel_dieren.selectById">
+        <![CDATA[from AsielDier as d where d.id = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectByIkZoekBaasId">
+        <![CDATA[from AsielDier as d where d.ikZoekBaasId = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectByDierIsZoekId">
+        <![CDATA[from AsielDier as d where d.dierIsZoekId = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectCountChipTatoe">
+        <![CDATA[select count(d.id) from AsielDier as d where d.chipPasnummer = :Id or d.tatoeage = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectByEigenaar">
+        <![CDATA[from AsielDier as d where eigenaarId = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectByNaamGeborenKlant">
+        <![CDATA[from AsielDier as d 
+                 where lower(d.naam) = lower(:Naam)
+                   and d.geboortedatum = :Geboortedatum
+                   and lower(d.eigenaarId.achternaam) = lower(:Achternaam)
+                   and lower(d.eigenaarId.adresId.postcode) = lower(:Postcode)
+                   and lower(d.eigenaarId.adresId.huisnummer) = lower(:Huisnummer)]]>
+    </query>
+
+    <query name="asiel_dieren.selectCountRassen">
+        <![CDATA[select count(rasId) from AsielDier as d where d.rasId = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectCountVachten">
+        <![CDATA[select count(dierVachtId) from AsielDier as d where d.dierVachtId = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectCountKleurenByNaam">
+        <![CDATA[select count(kleur) from AsielDier as d where d.kleur = :Id]]>
+    </query>
+
+    <query name="asiel_dieren.selectVorigDier">
+        <![CDATA[from AsielDier as d
+                 where d.id = (
+                    select max(id) from AsielDier as md 
+                    where md.id < :Id
+                 )]]>
+    </query>
+
+    <query name="asiel_dieren.selectVolgendDier">
+        <![CDATA[from AsielDier as d
+                 where d.id = (
+                    select min(id) from AsielDier as md 
+                    where md.id > :Id
+                 )]]>
+    </query>
+
+    <query name="asiel_dieren.searchAsielDieren">
+        <![CDATA[select distinct ad from AsielDier as ad
+                   join ad.rasId as ras
+                 where ad.identificatieNummer = :StaticWaarde or
+                       ad.amivediNummer = :StaticWaarde or
+                       lower(ad.naam) like lower(:ZoekWaarde) or
+                       lower(ras.naam) like lower(:ZoekWaarde) or
+                       ad.chipPasnummer = :StaticWaarde]]>
+    </query>
+
+    <query name="asiel_dieren.selectAmersfoortData">
+        <![CDATA[from AsielDier as ad
+                 where ad.naam = :Naam and
+                       (ad.geboortedatum is null or ad.chipPasnummer = :Chipnummer)]]>
+    </query>
+
+</hibernate-mapping>

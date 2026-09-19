@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="creche_reserveringen.selectByKlantId">
+        <![CDATA[select f from CrecheReservering as f where f.klantId = :KlantId]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractId">
+        <![CDATA[select f from CrecheReservering as f where f.crecheContractId = :CrecheContractId order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractIdAndFromDatum">
+        <![CDATA[select f from CrecheReservering as f where f.crecheContractId = :CrecheContractId and f.gereserveerdVan >= :BeginDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractIdAndUntilDatum">
+        <![CDATA[select f from CrecheReservering as f where f.crecheContractId = :CrecheContractId and f.gereserveerdVan <= :EindDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractIdAndDatum">
+        <![CDATA[select f from CrecheReservering as f where f.crecheContractId = :CrecheContractId and f.gereserveerdVan >= :BeginDatum and f.gereserveerdTot <= :EindDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractIdAndPeriode">
+        <![CDATA[select f from CrecheReservering as f where f.crecheContractId = :CrecheContractId and f.gereserveerdVan >= :BeginDatum and f.gereserveerdVan <= :EindDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractIdAndDatumAndZonderFactuur">
+        <![CDATA[select f from CrecheReservering as f where f.crecheFactuurId is null and f.crecheContractId = :CrecheContractId and f.gereserveerdVan >= :BeginDatum and f.gereserveerdTot <= :EindDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByCrecheContractIdAndKlantIdAndDatumAndZonderFactuur">
+        <![CDATA[select f from CrecheReservering as f where f.crecheFactuurId is null and f.crecheContractId = :CrecheContractId and f.klantId = :KlantId and f.gereserveerdVan >= :BeginDatum and f.gereserveerdTot < :EindDatum order by f.gereserveerdVan asc]]>
+    </query>
+
+    <query name="creche_reserveringen.selectByDatumExpressie">
+        <![CDATA[from CrecheReservering as d where d.gereserveerdVan >= :BeginDatum and d.gereserveerdTot <= :EindDatum]]>
+    </query>
+
+</hibernate-mapping>

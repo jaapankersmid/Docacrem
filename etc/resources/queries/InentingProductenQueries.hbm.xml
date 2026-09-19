@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+    
+	<query name="inenting_producten.findAll">
+        <![CDATA[from InentingProduct order by naam]]>
+    </query>
+	
+    <query name="inenting_producten.selectVerplicht">
+        <![CDATA[from InentingProduct as ie where ie.verplicht = true]]>
+    </query>
+
+    <query name="inenting_producten.selectCountInetingProducten">
+        <![CDATA[select count(inentingProductId) from Inenting as ie where ie.inentingProductId = :Id]]>
+    </query>
+
+</hibernate-mapping>

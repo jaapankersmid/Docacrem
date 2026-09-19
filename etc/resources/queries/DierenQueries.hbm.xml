@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="dieren.selectById">
+        <![CDATA[from Dier as d where d.id = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountChipTatoe">
+        <![CDATA[select count(d.id) from Dier as d where d.chipPasnummer = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountRassen">
+        <![CDATA[select count(rasId) from Dier as d where d.rasId = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountVoedingCategorie">
+        <![CDATA[select count(voedingCategorieId) from Dier as d where d.voedingCategorieId = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountVachten">
+        <![CDATA[select count(dierVachtId) from Dier as d where d.dierVachtId = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountKleurenByNaam">
+        <![CDATA[select count(kleur) from Dier as d where d.kleur = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountPensionEigenschappen">
+        <![CDATA[select count(pensionEigenschapId) from Dier as d where d.pensionEigenschapId = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountPensionPrijzen">
+        <![CDATA[select count(pensionPrijsCategorieId) from Dier as d where d.pensionPrijsCategorieId = :Id]]>
+    </query>
+
+    <query name="dieren.selectCountDierenartsen">
+        <![CDATA[select count(l.dierenartsId) 
+		         from Dier as d 
+		         inner join d.lichaamelijkId as l
+				 where l.dierenartsId = :Id]]>
+    </query>
+
+    <query name="dieren.selectRelatieDierenBinnenPeriode">
+        <![CDATA[select d 
+                 from Factuur as f, Dier as d
+                 inner join f.factuurRegels as regel
+                 where regel.dierId = d.id
+				     and ((f.gereserveerdVan <= :BeginDatum and (f.gereserveerdTot is null or f.gereserveerdTot >= :EindDatum))
+                     or (f.gereserveerdVan >= :BeginDatum and f.gereserveerdVan <= :EindDatum)
+                     or (f.gereserveerdTot >= :BeginDatum and f.gereserveerdTot <= :EindDatum))
+                     and d.id = :DierId and d.overleden = false]]>
+    </query>
+
+    <query name="dieren.searchDieren">
+        <![CDATA[select distinct k 
+				 from Dier as d
+				 inner join d.klantId as k
+                 inner join d.rasId as ras
+                 where lower(d.naam) like lower(:ZoekWaarde) or
+                       lower(ras.naam) like lower(:ZoekWaarde) or
+                       d.chipPasnummer = :StaticWaarde
+				 order by k.achternaam]]>
+    </query>
+
+</hibernate-mapping>

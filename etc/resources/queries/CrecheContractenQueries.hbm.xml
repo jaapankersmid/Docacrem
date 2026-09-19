@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="creche_contracten.selectByContractNummer">
+        <![CDATA[from CrecheContract as f where f.contractNummer = :ContractNummer]]>
+    </query>
+
+    <query name="creche_contracten.selectByKlantId">
+        <![CDATA[select f from CrecheContract as f where f.klantId = :KlantId order by f.contractPeriodeVan asc, f.contractNummer asc]]>
+    </query>
+
+    <query name="creche_contracten.selectByIds">
+        <![CDATA[select f from CrecheContract as f where id in (:ids)]]>
+    </query>
+
+    <query name="creche_contracten.selectByActief">
+        <![CDATA[select distinct f from CrecheContract as f join f.crecheContractRegels as ccr join ccr.dierId as d join f.klantId as k where f.actief is true]]>
+    </query>
+
+    <query name="creche_contracten.selectCountKlanten">
+        <![CDATA[select count(klantId) from CrecheContract as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="creche_contracten.selectCountCrechePrijsCategorieId">
+        <![CDATA[select count(crechePrijsCategorieId) from CrecheContract as c where c.crechePrijsCategorieId = :Id]]>
+    </query>
+
+</hibernate-mapping>

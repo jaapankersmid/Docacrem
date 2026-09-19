@@ -1,0 +1,277 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="facturen.selectByReserveringNummer">
+        <![CDATA[from Factuur as f where f.reserveringNummer = :ReserveringNummer]]>
+    </query>
+
+    <query name="facturen.selectByFactuurNummer">
+        <![CDATA[from Factuur as f where f.factuurNummer = :FactuurNummer]]>
+    </query>
+
+    <query name="facturen.selectByKlantId">
+        <![CDATA[select f from Factuur as f where f.klantId = :KlantId order by f.gereserveerdVan asc, f.factuurNummer asc]]>
+    </query>
+
+    <query name="facturen.selectByKlantIdWithNoodAdres">
+        <![CDATA[select f from Factuur as f left join fetch f.noodAdressen where f.klantId = :KlantId order by f.gereserveerdVan asc, f.factuurNummer asc]]>
+    </query>
+
+    <query name="facturen.selectByKlantIdOrderByFactuurDatumDesc">
+        <![CDATA[select f from Factuur as f where f.klantId = :KlantId order by f.factuurDatum desc, f.gereserveerdVan desc]]>
+    </query>
+
+    <query name="facturen.selectByIds">
+        <![CDATA[select f from Factuur as f where id in (:ids)]]>
+    </query>
+
+    <query name="facturen.selectByExternId">
+        <![CDATA[select f from Factuur as f where f.externId = :ExternId]]>
+    </query>
+
+    <query name="facturen.selectByExternIdAndGereserveerdVanAfterDate">
+        <![CDATA[select f from Factuur as f where f.externId = :ExternId and f.gereserveerdVan >= :AfterDate]]>
+    </query>
+
+    <query name="facturen.selectByHdovId">
+        <![CDATA[select f from Factuur as f where f.hdovId = :HdovId]]>
+    </query>
+	
+	<query name="facturen.selectByKlantIdAndGereserveerdVanGroterDan">
+        <![CDATA[select f
+		         from Factuur as f
+		         where f.klantId = :klantId
+				   and date(f.gereserveerdVan) >= :van
+				   and f.geannuleerd is false]]>
+    </query>
+	
+	<query name="facturen.selectByGereserveerdVanInPeriode">
+        <![CDATA[select f
+		         from Factuur as f
+		         where date(f.gereserveerdVan) >= :periodeVan
+				   and date(f.gereserveerdVan) <= :periodeTot
+				   and f.geannuleerd is false]]>
+    </query>
+	
+	<query name="facturen.selectByGereserveerdVanEnGereserveerdTotOpDag">
+        <![CDATA[select f
+		         from Factuur as f
+		         where (date(f.gereserveerdVan) = :dag or date(f.gereserveerdTot) = :dag)
+				   and f.geannuleerd is false]]>
+    </query>
+	
+	<query name="facturen.selectHuidigeReservering">
+        <![CDATA[select f
+		         from Factuur as f
+				 where f.klantId = :klantId
+				   and year(f.gereserveerdVan) <= year(:huidigeDatum) and year(f.gereserveerdTot) >= year(:huidigeDatum)
+				   and month(f.gereserveerdVan) <= month(:huidigeDatum) and month(f.gereserveerdTot) >= month(:huidigeDatum)
+				   and day(f.gereserveerdVan) <= day(:huidigeDatum) and day(f.gereserveerdTot) >= day(:huidigeDatum)
+				   and f.geannuleerd is false
+				 order by f.gereserveerdVan desc]]>
+    </query>
+
+    <query name="facturen.selectKlantDagVerblijven">
+        <![CDATA[from Factuur as f 
+                    where f.geannuleerd = false 
+					  and f.dagVerblijf = true 
+                      and f.klantId = :KlantId
+                      and year(f.gereserveerdVan) = year(:BeginDatum)
+                      and month(f.gereserveerdVan) = month(:BeginDatum)
+					order by f.gereserveerdVan]]>
+    </query>
+
+    <query name="facturen.selectKlantDagVerblijfInPeriode">
+        <![CDATA[from Factuur as f 
+                    where f.geannuleerd = false 
+					  and f.dagVerblijf = true 
+                      and f.klantId = :KlantId
+                      and f.gereserveerdVan >= :BeginDatum
+                      and f.gereserveerdVan <= :EindDatum
+					order by f.gereserveerdVan]]>
+    </query>
+
+    <query name="facturen.selectDierenVertrekkend">
+        <![CDATA[select f 
+		     from Factuur as f 
+		     inner join f.klantId as klant
+             where f.geannuleerd = false and 
+			   ((not f.verblevenTot is null and year(f.verblevenTot) > 1000 and f.verblevenTot > :Datum1 and f.verblevenTot < :Datum2) 
+             or ((f.verblevenTot is null or year(f.verblevenTot) < 1000) and f.gereserveerdTot > :Datum1 and f.gereserveerdTot < :Datum2))
+			 order by f.opgehaald, klant.achternaam, f.factuurNummer]]>
+    </query>
+
+    <query name="facturen.overlaptBestaandeReservering">
+        <![CDATA[select f 
+		     from Factuur as f 
+		     inner join f.klantId as klant
+             where f.geannuleerd = false
+               and (:Id = -1 or f.id <> :Id)
+               and klant.id = :KlantId
+               and date(f.gereserveerdVan) < date(:Tot)
+               and date(f.gereserveerdTot) > date(:Van)]]>
+    </query>
+
+    <query name="facturen.overlaptBestaandeReserveringMetDieren">
+        <![CDATA[select f 
+		     from Factuur as f 
+			 inner join f.factuurRegels as regel
+		     inner join f.klantId as klant
+             where f.geannuleerd = false
+               and (:Id = -1 or f.id <> :Id)
+               and klant.id = :KlantId
+               and date(f.gereserveerdVan) < date(:Tot)
+               and date(f.gereserveerdTot) > date(:Van)
+			   and regel.dierId in (:DierIds)]]>
+    </query>
+
+    <query name="facturen.selectCountKlanten">
+        <![CDATA[select count(klantId) from Factuur as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="facturen.selectBezetting">
+        <![CDATA[from Factuur as f 
+			 where f.geannuleerd = false and
+			   ((not f.verblevenVan is null and year(f.verblevenVan) > 1000 and 
+                       ((f.verblevenVan <= :BeginDatum and (f.verblevenTot is null or f.verblevenTot >= :EindDatum))
+                     or (f.verblevenVan >= :BeginDatum and f.verblevenVan <= :EindDatum)
+                     or (f.verblevenTot >= :BeginDatum and f.verblevenTot <= :EindDatum)))
+             or ((f.verblevenVan is null or year(f.verblevenVan) < 1000) and 
+                       ((f.gereserveerdVan <= :BeginDatum and (f.gereserveerdTot is null or f.gereserveerdTot >= :EindDatum))
+                     or (f.gereserveerdVan >= :BeginDatum and f.gereserveerdVan <= :EindDatum)
+                     or (f.gereserveerdTot >= :BeginDatum and f.gereserveerdTot <= :EindDatum))))]]>
+    </query>
+
+    <query name="facturen.selectSalonWerkzaamhedenNaarden">
+        <![CDATA[select distinct f from Factuur as f, Dier as dier 
+		    inner join f.klantId as klant
+            inner join f.factuurRegels as regel
+            inner join regel.producten as product
+            inner join dier.rasId as ras
+            inner join ras.diersoortId as diersoort
+             where regel.dierId = dier.id
+			   and f.geannuleerd = false and 
+               (((f.gereserveerdTot > :Datum1 and f.gereserveerdTot < :Datum2)
+                  and (lower(product.productNaam) like '%wassen%'
+                    or lower(product.productNaam) like '%trimmen%'
+                    or lower(product.productNaam) like '%borstelen%'))
+                or (((f.gereserveerdVan <= :Datum1 and f.gereserveerdTot >= :Datum1)
+                     or (f.gereserveerdVan >= :Datum1 and f.gereserveerdVan <= :Datum2)
+                     or (f.gereserveerdTot >= :Datum1 and f.gereserveerdTot <= :Datum2))
+                  and regel.borstelSoortId is not null)
+                or (((f.gereserveerdVan <= :Datum1 and f.gereserveerdTot >= :Datum1)
+                     or (f.gereserveerdVan >= :Datum1 and f.gereserveerdVan <= :Datum2)
+                     or (f.gereserveerdTot >= :Datum1 and f.gereserveerdTot <= :Datum2))
+                  and regel.wassenSoortId is not null)
+                or ((f.gereserveerdTot > :Datum3 and f.gereserveerdTot < :Datum4)
+                     and diersoort.naam = 'Hond'))
+			order by klant.achternaam, f.factuurNummer]]>
+    </query>
+
+    <query name="facturen.selectEersteHerinneringen">
+        <![CDATA[select distinct f
+					from Factuur as f
+                    where f.geannuleerd = false 
+					  and f.openstaandBedrag > 0
+                      and f.factuurDatum is not null
+                      and (f.eersteHerinnering is null 
+					  or   (year(f.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(f.eersteHerinnering) = month(:HerinneringDatum)
+						and day(f.eersteHerinnering) = day(:HerinneringDatum))
+                      and f.tweedeHerinnering is null
+                      and f.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="facturen.selectTweedeHerinneringen">
+        <![CDATA[select distinct f
+					from Factuur as f
+                    where f.geannuleerd = false 
+					  and f.openstaandBedrag > 0
+                      and f.factuurDatum is not null
+                      and f.eersteHerinnering is not null
+					  and (f.tweedeHerinnering is null 
+					  or   (year(f.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(f.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(f.tweedeHerinnering) = day(:HerinneringDatum))
+                      and f.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="facturen.maandoverzicht">
+        <![CDATA[select distinct(f) from Factuur as f
+					join f.betalingen as b
+                    where f.geannuleerd = false 
+					  and not b.betaalDatum is null
+					  and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="facturen.maandoverzichtDierdorado">
+        <![CDATA[select distinct(f) from Factuur as f
+					where f.geannuleerd = false 
+					  and not f.verblevenTot is null
+					  and year(f.verblevenTot) = year(:BeginDatum)
+                      and month(f.verblevenTot) = month(:BeginDatum)
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="facturen.debiteurenoverzicht">
+        <![CDATA[select distinct(f) from Factuur as f
+					left join f.betalingen as b
+                    where f.geannuleerd = false 
+					  and f.totaalBedrag - f.totaalBetaald > 0
+					  and not f.factuurDatum is null
+					  and f.factuurDatum <= :Datum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="facturen.debiteurenoverzichtDierdorado">
+        <![CDATA[select distinct(f) from Factuur as f
+                    left join f.betalingen as b
+                    where f.geannuleerd = false 
+					  and f.totaalBedrag - f.totaalBetaald > 0
+                      and not f.verblevenTot is null
+                      and f.verblevenTot <= :Datum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="facturen.kasboekoverzicht">
+        <![CDATA[select distinct f from Factuur as f
+				 join f.betalingen as betaling
+                    where f.geannuleerd = false 
+					  and (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="facturen.kasboekFacturen">
+        <![CDATA[select distinct f 
+                    from Factuur as f  
+					join f.betalingen as b
+                    where (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+						and b.betaalDatum <= :EindDatum)]]>
+    </query>
+    
+    <query name="facturen.totaalDagen">
+        <![CDATA[select distinct f from Factuur as f
+                    where f.geannuleerd = false 
+					  and
+					    not f.verblevenVan is null and f.verblevenVan <= :EindDatum
+					  and
+					    (f.verblevenTot is null or f.verblevenTot >= :BeginDatum)]]>
+    </query>
+    
+    <query name="facturen.totaalCijfers">
+        <![CDATA[select distinct f from Factuur as f
+					join f.betalingen as b
+                    where f.geannuleerd = false 
+					  and (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

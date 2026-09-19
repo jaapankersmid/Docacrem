@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="sectoren.selectByNaamAndDiersoort">
+        <![CDATA[from Sector as s where s.naam = :Naam and s.diersoortId = :DiersoortId]]>
+    </query>
+
+    <query name="sectoren.selectByDiersoort">
+        <![CDATA[from Sector as s where s.diersoortId = :DiersoortId order by s.volgorde]]>
+    </query>
+
+</hibernate-mapping>

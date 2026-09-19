@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="asiel_pleeg_gezin_verblijven.selectCountEigenaar">
+        <![CDATA[select count(asielEigenaarId) from PleegGezinVerblijf as av where av.asielEigenaarId = :Id]]>
+    </query>
+
+    <query name="asiel_pleeg_gezin_verblijven.selectPleeggezinVerblijfByAsielEigenaarId">
+        <![CDATA[from PleegGezinVerblijf as av 
+                    where av.asielEigenaarId = :AsielEigenaarId 
+                 order by av.id desc]]>
+    </query>
+
+</hibernate-mapping>

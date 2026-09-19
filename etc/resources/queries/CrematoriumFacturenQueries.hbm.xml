@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="crematorium_facturen.selectByKlantId">
+        <![CDATA[from CrematoriumFactuur as c where c.klantId = :KlantId order by c.crematieDatum desc, c.crematieTijd desc]]>
+    </query>
+    
+    <query name="crematorium_facturen.selectByDierId">
+        <![CDATA[select c
+                 from CrematoriumFactuur as c
+                 inner join c.dieren as d
+                 where d.id = :DierId
+                 order by c.crematieDatum desc,
+                          c.crematieTijd desc]]>
+    </query>
+
+    <query name="crematorium_facturen.selectCountKlanten">
+        <![CDATA[select count(klantId) from CrematoriumFactuur as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="crematorium_facturen.selectCountPaarden">
+        <![CDATA[select count(dier) from CrematoriumFactuur as c 
+                 inner join c.dieren as dier
+                 where dier.rasId.diersoortId.naam = 'Paard' and c.id = :Id]]>
+    </query>
+
+    <query name="crematorium_facturen.selectCountCrematoriumPrijzen">
+        <![CDATA[select count(crematoriumPrijsId) from CrematoriumFactuur as c where c.crematoriumPrijsId = :Id]]>
+    </query>
+
+    <query name="crematorium_facturen.selectCountDierenartsen">
+        <![CDATA[select count(dierenartsId) from CrematoriumFactuur as c where c.dierenartsId = :Id]]>
+    </query>
+
+    <query name="crematorium_facturen.selectCountDerdePartij">
+        <![CDATA[select count(derdePartijId) from CrematoriumFactuur as c where c.derdePartijId = :Id]]>
+    </query>
+
+    <query name="crematorium_facturen.selectCountGebruikers">
+        <![CDATA[select count(gebruikerId) from CrematoriumFactuur as c where c.gebruikerId = :Id]]>
+    </query>
+
+    <query name="crematorium_facturen.selectEersteHerinneringen">
+        <![CDATA[from CrematoriumFactuur as c
+                    where c.openstaandBedrag > 0
+                      and c.factuurDatum is not null
+                      and (c.eersteHerinnering is null 
+					  or   (year(c.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(c.eersteHerinnering) = month(:HerinneringDatum)
+						and day(c.eersteHerinnering) = day(:HerinneringDatum))
+                      and c.tweedeHerinnering is null
+                      and c.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="crematorium_facturen.selectTweedeHerinneringen">
+        <![CDATA[from CrematoriumFactuur as c
+                    where c.openstaandBedrag > 0
+                      and c.factuurDatum is not null
+                      and c.eersteHerinnering is not null
+                      and (c.tweedeHerinnering is null 
+					  or   (year(c.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(c.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(c.tweedeHerinnering) = day(:HerinneringDatum))
+                      and c.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+
+    <query name="crematorium_facturen.selectEersteHerinneringenBentelo">
+        <![CDATA[select c from CrematoriumFactuur as c
+                    inner join c.klantId as klant
+                    where not lower(klant.achternaam) like 'kremanimal%' 
+                      and c.openstaandBedrag > 0
+                      and c.factuurDatum is not null
+                      and (c.eersteHerinnering is null 
+					  or   (year(c.eersteHerinnering) = year(:HerinneringDatum))
+					    and month(c.eersteHerinnering) = month(:HerinneringDatum)
+						and day(c.eersteHerinnering) = day(:HerinneringDatum))
+                      and c.tweedeHerinnering is null
+                      and c.factuurDatum < :EersteHerinnering]]>
+    </query>
+
+    <query name="crematorium_facturen.selectTweedeHerinneringenBentelo">
+        <![CDATA[select c from CrematoriumFactuur as c
+                    inner join c.klantId as klant
+                    where not lower(klant.achternaam) like 'kremanimal%' 
+                      and c.openstaandBedrag > 0
+                      and c.factuurDatum is not null
+                      and c.eersteHerinnering is not null
+                      and (c.tweedeHerinnering is null 
+					  or   (year(c.tweedeHerinnering) = year(:HerinneringDatum))
+					    and month(c.tweedeHerinnering) = month(:HerinneringDatum)
+						and day(c.tweedeHerinnering) = day(:HerinneringDatum))
+                      and c.eersteHerinnering < :TweedeHerinnering]]>
+    </query>
+    
+    <query name="crematorium_facturen.maandoverzicht">
+        <![CDATA[select distinct(f) from CrematoriumFactuur as f
+					join f.betalingen as b
+                    where not b.betaalDatum is null
+					  and b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="crematorium_facturen.maandoverzicht_bentelo">
+        <![CDATA[select f 
+                 from CrematoriumFactuur as f
+					join f.betalingen as b
+                    inner join f.klantId as klant
+                    inner join klant.adresId as adres
+                    where b.betaalDatum >= :BeginDatum
+                      and b.betaalDatum <= :EindDatum
+                      and adres.land = :Land
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="crematorium_facturen.debiteurenoverzicht">
+        <![CDATA[select distinct(f) from CrematoriumFactuur as f
+                    where f.totaalBedrag - f.totaalBetaald > 0
+					  and not f.factuurDatum is null
+					  and f.factuurDatum <= :Datum
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="crematorium_facturen.kasboekoverzicht">
+        <![CDATA[select distinct f from CrematoriumFactuur as f
+                    join f.betalingen as betaling
+                    where (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="crematorium_facturen.kasboekoverzicht_bentelo">
+        <![CDATA[select distinct f 
+                 from CrematoriumFactuur as f
+                    join f.betalingen as betaling
+                    inner join f.klantId as klant
+                    inner join klant.adresId as adres
+                    where (not betaling.betaalDatum is null
+						and betaling.betaalDatum >= :BeginDatum
+						and betaling.betaalDatum <= :EindDatum)
+                    and (adres.land = :Land or (adres.land <> 'Duitsland' and 'Nederland' = :Land))
+                 order by f.factuurNummer]]>
+    </query>
+    
+    <query name="crematorium_facturen.kasboekFacturen">
+        <![CDATA[select distinct f 
+                    from CrematoriumFactuur as f  
+                    join f.betalingen as b
+                    where (not b.betaalDatum is null
+						and b.betaalDatum >= :BeginDatum
+						and b.betaalDatum <= :EindDatum)]]>
+    </query>
+
+</hibernate-mapping>

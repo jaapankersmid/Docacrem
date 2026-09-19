@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+    <query name="dienst_contracten.selectByContractNummer">
+        <![CDATA[from DienstContract as f where f.contractNummer = :ContractNummer]]>
+    </query>
+
+    <query name="dienst_contracten.selectByKlantId">
+        <![CDATA[select f from DienstContract as f where f.klantId = :KlantId order by f.contractPeriodeVan asc, f.contractNummer asc]]>
+    </query>
+
+    <query name="dienst_contracten.selectByIds">
+        <![CDATA[select f from DienstContract as f where id in (:ids)]]>
+    </query>
+
+    <query name="dienst_contracten.selectCountKlanten">
+        <![CDATA[select count(klantId) from DienstContract as c where c.klantId = :Id]]>
+    </query>
+
+    <query name="dienst_contracten.selectCountVoertuig">
+        <![CDATA[select count(voertuigId) from DienstContract as c where c.voertuigId = :Id]]>
+    </query>
+
+</hibernate-mapping>
