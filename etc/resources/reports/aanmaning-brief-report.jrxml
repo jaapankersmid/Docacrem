@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="aanmaning-brief-report" pageWidth="595" pageHeight="842" columnWidth="455" leftMargin="70" rightMargin="70" topMargin="70" bottomMargin="70">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="crematorium_factuur_id" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["350968"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="organisatie_naam" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="organisatie_plaats" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="organisatie_bank" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="install_dir" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT f.crematorium_factuur_id, f.factuur_nummer, aanhef, voorletters, tussenvoegsel, achternaam, naam_bedrijf, straat, huisnummer, postcode, woonplaats, dieren.naam AS diernaam, rassen.naam AS rasnaam, diersoort.naam AS diersoort, kruising, geslacht, geboortedatum, kleur, chip_pasnummer, factuur_datum, eerste_herinnering, tweede_herinnering, aanmaning_datum, administratie_kosten, korting_percentage, korting_bedrag, btw_percentage, betaal_wijze,
+       individuele_crematie, anonieme_crematie, ophalen_bij_eigenaar, eigenaar_brengt_dier, crematie_datum, crematie_tijd, leeftijd, dieren.gewicht,
+       crematie_prijs,as_in_urn,as_verstrooing, prijs_individueel,kosten_vervoer AS kosten_vervoer,extra_kosten,box,gedenkplaat,
+       (IF(ISNULL((SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id)),0,(SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id))+crematie_prijs+prijs_individueel+kosten_vervoer+extra_kosten+administratie_kosten-korting_bedrag) / (btw_percentage+100) * btw_percentage AS totaal_btw,
+       (IF(ISNULL((SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id)),0,(SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id))+crematie_prijs+prijs_individueel+kosten_vervoer+extra_kosten+administratie_kosten-korting_bedrag) AS nog_te_betalen,
+destructie_crematie,
+begrafenis_individueel,
+begrafenis_collectief,
+dierenarts.naam AS dierenarts,
+f.totaal_betalingen, (SELECT max(b.betaal_wijze) FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f.crematorium_factuur_id AND b.betaal_datum = laatste_betaal_datum) AS laatste_betaal_wijze
+FROM (SELECT f1.*, (SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f1.crematorium_factuur_id) AS totaal_betalingen, (SELECT max(b.betaal_datum) FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f1.crematorium_factuur_id) AS laatste_betaal_datum FROM crematorium_facturen AS f1) AS f
+  JOIN klanten ON f.klant_id=klanten.klant_id
+  LEFT JOIN adres ON klanten.adres_id=adres.adres_id
+  LEFT JOIN dieren ON f.crematorium_factuur_id=dieren.crematorium_factuur_id
+  LEFT JOIN rassen ON dieren.ras_id=rassen.ras_id
+  LEFT JOIN diersoort ON rassen.diersoort_id=diersoort.diersoort_id
+  LEFT JOIN dierenarts ON f.dierenarts_id=dierenarts.dierenarts_id
+WHERE f.factuur_nummer=$P{crematorium_factuur_id}
+GROUP BY f.factuur_nummer, voorletters, achternaam, straat, huisnummer, postcode, woonplaats, factuur_datum, eerste_herinnering, tweede_herinnering, administratie_kosten, korting_percentage, korting_bedrag]]>
+	</queryString>
+	<field name="crematorium_factuur_id" class="java.lang.Long"/>
+	<field name="factuur_nummer" class="java.lang.Long"/>
+	<field name="aanhef" class="java.lang.String"/>
+	<field name="voorletters" class="java.lang.String"/>
+	<field name="tussenvoegsel" class="java.lang.String"/>
+	<field name="achternaam" class="java.lang.String"/>
+	<field name="naam_bedrijf" class="java.lang.String"/>
+	<field name="straat" class="java.lang.String"/>
+	<field name="huisnummer" class="java.lang.String"/>
+	<field name="postcode" class="java.lang.String"/>
+	<field name="woonplaats" class="java.lang.String"/>
+	<field name="diernaam" class="java.lang.String"/>
+	<field name="rasnaam" class="java.lang.String"/>
+	<field name="diersoort" class="java.lang.String"/>
+	<field name="kruising" class="java.lang.Boolean"/>
+	<field name="geslacht" class="java.lang.String"/>
+	<field name="geboortedatum" class="java.sql.Date"/>
+	<field name="kleur" class="java.lang.String"/>
+	<field name="chip_pasnummer" class="java.lang.String"/>
+	<field name="factuur_datum" class="java.sql.Date"/>
+	<field name="eerste_herinnering" class="java.sql.Date"/>
+	<field name="tweede_herinnering" class="java.sql.Date"/>
+	<field name="aanmaning_datum" class="java.sql.Date"/>
+	<field name="administratie_kosten" class="java.math.BigDecimal"/>
+	<field name="korting_percentage" class="java.math.BigDecimal"/>
+	<field name="korting_bedrag" class="java.math.BigDecimal"/>
+	<field name="btw_percentage" class="java.math.BigDecimal"/>
+	<field name="betaal_wijze" class="java.lang.String"/>
+	<field name="individuele_crematie" class="java.lang.Boolean"/>
+	<field name="anonieme_crematie" class="java.lang.Boolean"/>
+	<field name="ophalen_bij_eigenaar" class="java.lang.Boolean"/>
+	<field name="eigenaar_brengt_dier" class="java.lang.Boolean"/>
+	<field name="crematie_datum" class="java.sql.Date"/>
+	<field name="crematie_tijd" class="java.sql.Time"/>
+	<field name="leeftijd" class="java.lang.String"/>
+	<field name="gewicht" class="java.math.BigDecimal"/>
+	<field name="crematie_prijs" class="java.math.BigDecimal"/>
+	<field name="as_in_urn" class="java.math.BigDecimal"/>
+	<field name="as_verstrooing" class="java.math.BigDecimal"/>
+	<field name="prijs_individueel" class="java.math.BigDecimal"/>
+	<field name="kosten_vervoer" class="java.math.BigDecimal"/>
+	<field name="extra_kosten" class="java.math.BigDecimal"/>
+	<field name="box" class="java.math.BigDecimal"/>
+	<field name="gedenkplaat" class="java.math.BigDecimal"/>
+	<field name="totaal_btw" class="java.math.BigDecimal"/>
+	<field name="nog_te_betalen" class="java.math.BigDecimal"/>
+	<field name="destructie_crematie" class="java.lang.Boolean"/>
+	<field name="begrafenis_individueel" class="java.lang.Boolean"/>
+	<field name="begrafenis_collectief" class="java.lang.Boolean"/>
+	<field name="dierenarts" class="java.lang.String"/>
+	<field name="totaal_betalingen" class="java.math.BigDecimal"/>
+	<field name="laatste_betaal_wijze" class="java.lang.String"/>
+	<variable name="factuurDatum" class="java.util.Date"/>
+	<variable name="klantnaam" class="java.lang.String">
+		<variableExpression><![CDATA[$F{aanhef} + " " +
+(($F{voorletters} != null && !$F{voorletters}.isEmpty()) ? $F{voorletters} + " " : "") +
+(($F{tussenvoegsel} != null && !$F{tussenvoegsel}.isEmpty()) ? $F{tussenvoegsel} + " " : "") +
+$F{achternaam}]]></variableExpression>
+	</variable>
+	<variable name="adres" class="java.lang.String">
+		<variableExpression><![CDATA[$F{straat} + " " + $F{huisnummer}]]></variableExpression>
+	</variable>
+	<variable name="postcode_woonplaats" class="java.lang.String">
+		<variableExpression><![CDATA[$F{postcode} + " " + $F{woonplaats}]]></variableExpression>
+	</variable>
+	<variable name="soort_crematie" class="java.lang.String">
+		<variableExpression><![CDATA[($F{individuele_crematie} == java.lang.Boolean.TRUE) ? "Ja" : "Nee"]]></variableExpression>
+	</variable>
+	<variable name="producten_totaal" class="java.math.BigDecimal" calculation="Sum"/>
+	<background>
+		<band splitType="Prevent"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="100" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement key="textField-2" x="0" y="0" width="455" height="100"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement markup="styled">
+					<font fontName="Calibri" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["\n"
++ "\n"
++ "\n"
++ "\n"
++ $F{naam_bedrijf} + "\n"
++ ($F{aanhef} + " " +  (($F{voorletters} != null && !$F{voorletters}.isEmpty()) ? $F{voorletters} + " " : "") +  (($F{tussenvoegsel} != null && !$F{tussenvoegsel}.isEmpty()) ? $F{tussenvoegsel} + " " : "") +  $F{achternaam}) + "\n"
++ $F{straat} + " " + $F{huisnummer} + "\n"
++ $F{postcode} + "  " + $F{woonplaats} + "\n"
++ "\n"
++ "\n"
++ "\n"
++ "\n"
++ "\n"
++ "Datum: " + new java.text.SimpleDateFormat("dd-MM-yyyy").format($F{aanmaning_datum}) + "\n"
++ "\n"
++ "Betreft: Laatste aanmaning en aanzegging incassokosten.\n"
++ "\n"
++ "Geachte " + ($F{aanhef} + " " +  (($F{tussenvoegsel} != null && !$F{tussenvoegsel}.isEmpty()) ? $F{tussenvoegsel} + " " : "") +  $F{achternaam}) + ",\n"
++ "\n"
++ "Ondanks eerdere herinneringen en verzoeken tot betaling mochten wij van u nog geen betaling ontvangen van onderstaande factuur:\n"
++ "\n"
++ "- " + ($F{destructie_crematie} ? "destructie" : $F{begrafenis_individueel} || $F{begrafenis_collectief} ? "begrafenis" : "crematie") + " " + $F{diernaam} + " factuurnummer " + $F{factuur_nummer} + ($F{crematie_datum} != null ? " d.d. " + new java.text.SimpleDateFormat("dd-MM-yyyy").format($F{crematie_datum}) : "" ) + ", openstaand saldo € " + new DecimalFormat("#,##0.00;-#,##0.00").format(($F{nog_te_betalen}!=null?$F{nog_te_betalen}:BigDecimal.ZERO).subtract($F{totaal_betalingen}!=null?$F{totaal_betalingen}:BigDecimal.ZERO)) + "\n"
++ "\n"
++ "<b>Uiterste betaaltermijn: 14 dagen.</b>\n"
++ "Voor de laatste keer sommeren wij u nu het totaalbedrag van € " + new DecimalFormat("#,##0.00;-#,##0.00").format(($F{nog_te_betalen}!=null?$F{nog_te_betalen}:BigDecimal.ZERO).subtract($F{totaal_betalingen}!=null?$F{totaal_betalingen}:BigDecimal.ZERO)) + " uiterlijk binnen 14 dagen vanaf de dag nadat deze brief bij u is bezorgd te voldoen door overboeking op rekeningnummer:\n"
++ $P{organisatie_bank} + " ten name van " + $P{organisatie_naam} + " onder vermelding van <b>factuurnummer " + $F{factuur_nummer} + "</b>\n"
++ "\n"
++ "\n"
++ "<b>Aanzegging incassokosten.</b>\n"
++ "Geeft u ook aan deze laatste sommatie geen gevolg, dan stellen wij u nu reeds, voor zover nog vereist, in gebreke. Vervolgens zijn wij dan genoodzaakt onze vordering uit handen te geven aan incassobureau.\n"
++ "De hiermee gepaard gaande buitengerechtelijke incassokosten bedragen € 40,00 en komen op grond van de wet voor uw rekening. Deze kosten zijn gebaseerd op het Besluit vergoeding buitengerechtelijke kosten dat per 1 juli 2012 in werking is getreden.\n"
++ "\n"
++ "<b>Rente.</b>\n"
++ "Tevens maken wij alsdan aanspraak op vergoeding van de contractuele en/of wettelijke rente vanaf de datum dat u in verzuim bent.\n"
++ "We vertrouwen erop hiermee voldoende duidelijk te zijn geweest. Mocht u de betaling inmiddels hebben laten plaatsvinden, dan kunt u deze brief uiteraard als niet verzonden beschouwen.\n"
++ "\n"
++ "Wij geven u alsnog gelegenheid om zonder kostenverhoging het bovenstaande totaalbedrag binnen VEERTIEN DAGEN nadat deze brief bij u is bezorgd te voldoen.\n"
++ "\n"
++ "\n"
++ "Hoogachtend,\n"
++ "Majesta BV"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

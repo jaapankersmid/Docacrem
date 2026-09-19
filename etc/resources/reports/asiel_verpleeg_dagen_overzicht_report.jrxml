@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="asiel_verpleeg_dagen_overzicht_report" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="begin_datum" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="eind_datum" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="organisatie_naam" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Demopension"]]></defaultValueExpression>
+	</parameter>
+	<field name="class" class="java.lang.Class"/>
+	<field name="group" class="java.lang.String"/>
+	<field name="key" class="java.lang.String"/>
+	<field name="value" class="java.lang.Object"/>
+	<variable name="waarde" class="java.lang.String[]">
+		<variableExpression><![CDATA[((String)$F{value}).split(";")]]></variableExpression>
+		<initialValueExpression><![CDATA[new String[]{"","","","","","","","","",""}]]></initialValueExpression>
+	</variable>
+	<group name="KwartaalGroep">
+		<groupExpression><![CDATA[$F{group}]]></groupExpression>
+		<groupHeader>
+			<band height="43" splitType="Prevent">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+					<reportElement key="textField" x="0" y="9" width="535" height="16"/>
+					<textElement verticalAlignment="Top">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{group}.split(";")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement key="staticText-1" positionType="FixRelativeToBottom" x="67" y="25" width="45" height="18"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Afstand]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-2" positionType="FixRelativeToBottom" mode="Opaque" x="114" y="25" width="45" height="18" backcolor="#E6E6E6"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Zwerf]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-3" positionType="FixRelativeToBottom" x="161" y="25" width="45" height="18"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Uitwis.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-4" positionType="FixRelativeToBottom" mode="Opaque" x="208" y="25" width="45" height="18" backcolor="#E6E6E6"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Retour]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-5" positionType="FixRelativeToBottom" x="255" y="25" width="45" height="18"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Geboren]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-6" positionType="FixRelativeToBottom" mode="Opaque" x="302" y="25" width="45" height="18" backcolor="#E6E6E6"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[In beslag]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-7" positionType="FixRelativeToBottom" x="349" y="25" width="45" height="18"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Sociaal]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-8" positionType="FixRelativeToBottom" mode="Opaque" x="396" y="25" width="45" height="18" backcolor="#E6E6E6"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Negatief]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-9" positionType="FixRelativeToBottom" mode="Opaque" x="490" y="25" width="45" height="18" backcolor="#E6E6E6"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Totaal]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="staticText-10" positionType="FixRelativeToBottom" x="443" y="25" width="45" height="18"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Overig]]></text>
+				</staticText>
+				<line>
+					<reportElement key="line-2" positionType="FixRelativeToBottom" x="0" y="41" width="535" height="1"/>
+				</line>
+				<line>
+					<reportElement key="line-1" positionType="FixRelativeToBottom" x="0" y="24" width="535" height="1"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="1" splitType="Prevent">
+				<line>
+					<reportElement key="line-3" x="0" y="0" width="535" height="1"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="50" splitType="Stretch">
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="0" y="0" width="535" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{organisatie_naam}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-10" x="0" y="26" width="535" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Overzicht verpleegdagen " + new java.text.SimpleDateFormat("yyyy").format($P{begin_datum})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Prevent">
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="0" y="0" width="65" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{key}.split(";")[1]]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="67" y="0" width="45" height="18"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[0].equals("0") && !$V{waarde}[0].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[0]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-1" mode="Opaque" x="114" y="0" width="45" height="18" backcolor="#E6E6E6"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[1].equals("0") && !$V{waarde}[1].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[1]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-2" x="161" y="0" width="45" height="18"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[2].equals("0") && !$V{waarde}[2].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[2]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-3" mode="Opaque" x="208" y="0" width="45" height="18" backcolor="#E6E6E6"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[3].equals("0") && !$V{waarde}[3].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[3]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-4" x="255" y="0" width="45" height="18"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[4].equals("0") && !$V{waarde}[4].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[4]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-5" mode="Opaque" x="302" y="0" width="45" height="18" backcolor="#E6E6E6"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[5].equals("0") && !$V{waarde}[5].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[5]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-6" x="349" y="0" width="45" height="18"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[6].equals("0") && !$V{waarde}[6].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[6]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-7" mode="Opaque" x="396" y="0" width="45" height="18" backcolor="#E6E6E6"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[7].equals("0") && !$V{waarde}[7].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[7]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-8" x="443" y="0" width="45" height="18"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((!$V{waarde}[8].equals("0") && !$V{waarde}[8].equals("0,00")) || $F{key}.indexOf("Totaal") >= 0)?$V{waarde}[8]:""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-9" mode="Opaque" x="490" y="0" width="45" height="18" backcolor="#E6E6E6"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{waarde}[9]]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement key="line-4" positionType="FixRelativeToBottom" x="0" y="1" width="535" height="1">
+					<printWhenExpression><![CDATA[new Boolean($F{key}.indexOf("Totaal") >= 0)]]></printWhenExpression>
+				</reportElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

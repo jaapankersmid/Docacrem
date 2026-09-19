@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="crematorium-dierenarts-vergoeding" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="begin_datum" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="eind_datum" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dierenarts_id" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="achtergrond" class="java.lang.Boolean"/>
+	<parameter name="install_dir" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT dierenarts.dierenarts_id
+FROM dierenarts
+INNER JOIN crematorium_facturen ON dierenarts.dierenarts_id=crematorium_facturen.dierenarts_id
+INNER JOIN crematorium_factuur_betalingen AS cfb ON crematorium_facturen.crematorium_factuur_id=cfb.crematorium_factuur_id
+INNER JOIN betalingen ON cfb.betaling_id=betalingen.betaling_id
+WHERE betalingen.betaal_datum >= $P{begin_datum}
+  AND betalingen.betaal_datum <= $P{eind_datum}
+  AND incasso_datum IS NULL
+  AND vergoeding IS true
+  AND ($P{dierenarts_id} IS NULL OR $P{dierenarts_id} = dierenarts.dierenarts_id)
+GROUP BY dierenarts.dierenarts_id]]>
+	</queryString>
+	<field name="dierenarts_id" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="802" splitType="Stretch">
+			<subreport isUsingCache="true">
+				<reportElement key="subreport-1" x="0" y="0" width="595" height="802"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="eind_datum">
+					<subreportParameterExpression><![CDATA[$P{eind_datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="achtergrond">
+					<subreportParameterExpression><![CDATA[$P{achtergrond}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="install_dir">
+					<subreportParameterExpression><![CDATA[$P{install_dir}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dierenarts_id">
+					<subreportParameterExpression><![CDATA[$F{dierenarts_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="begin_datum">
+					<subreportParameterExpression><![CDATA[$P{begin_datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "crematorium-dierenarts-vergoeding-dieren.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
