@@ -1,0 +1,1 @@
+./bin/mysqldump --host=localhost --port=3306 --user=root --password=laatmeslapen --add-drop-table --complete-insert --extended-insert --skip-comments --hex-blob --set-charset --skip-triggers --lock-all-tables "dierenpension" --result-file="$1"

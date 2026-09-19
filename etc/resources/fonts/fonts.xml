@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+	<fontFamily name="Arial">
+	  <normal>etc/resources/fonts/arial/arial.ttf</normal>
+	  <bold>etc/resources/fonts/arial/arialbd.ttf</bold>
+	  <italic>etc/resources/fonts/arial/ariali.ttf</italic>
+	  <boldItalic>etc/resources/fonts/arial/arialbi.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+	<fontFamily name="SansSerif">
+	  <normal>etc/resources/fonts/arial/arial.ttf</normal>
+	  <bold>etc/resources/fonts/arial/arialbd.ttf</bold>
+	  <italic>etc/resources/fonts/arial/ariali.ttf</italic>
+	  <boldItalic>etc/resources/fonts/arial/arialbi.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">SansSerif, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">SansSerif, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+	<fontFamily name="Calibri">
+	  <normal>etc/resources/fonts/calibri/calibri.ttf</normal>
+	  <bold>etc/resources/fonts/calibri/calibrib.ttf</bold>
+	  <italic>etc/resources/fonts/calibri/calibrii.ttf</italic>
+	  <boldItalic>etc/resources/fonts/calibri/calibriz.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Calibri, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Calibri, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+	<fontFamily name="Book Antiqua">
+	  <normal>etc/resources/fonts/antiqua/BKANT.ttf</normal>
+	  <bold>etc/resources/fonts/antiqua/ANTQUAB.ttf</bold>
+	  <italic>etc/resources/fonts/antiqua/ANTQUAI.ttf</italic>
+	  <boldItalic>etc/resources/fonts/antiqua/ANTQUABI.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Book Antiqua, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Book Antiqua, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+    <fontFamily name="Comic Sans MS">
+	  <normal>etc/resources/fonts/comic/comic.ttf</normal>
+	  <bold>etc/resources/fonts/comic/comicbd.ttf</bold>
+	  <italic>etc/resources/fonts/comic/comici.ttf</italic>
+	  <boldItalic>etc/resources/fonts/comic/comicz.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Comic Sans MS, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Comic Sans MS, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+    <fontFamily name="Bradley Hand ITC">
+	  <normal>etc/resources/fonts/bradley_hand_itc/BRADHITC.ttf</normal>
+	  <bold>etc/resources/fonts/bradley_hand_itc/BRADHITC.ttf</bold>
+	  <italic>etc/resources/fonts/bradley_hand_itc/BRADHITC.ttf</italic>
+	  <boldItalic>etc/resources/fonts/bradley_hand_itc/BRADHITC.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Bradley Hand ITC, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Bradley Hand ITC, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+    <fontFamily name="Vivaldi">
+	  <normal>etc/resources/fonts/vivaldi/VIVALDII.TTF</normal>
+	  <bold>etc/resources/fonts/vivaldi/VIVALDII.TTF</bold>
+	  <italic>etc/resources/fonts/vivaldi/VIVALDII.TTF</italic>
+	  <boldItalic>etc/resources/fonts/vivaldi/VIVALDII.TTF</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Vivaldi, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Vivaldi, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+    <fontFamily name="Maiandra GD">
+	  <normal>etc/resources/fonts/maiandra/MAIAN.TTF</normal>
+	  <bold>etc/resources/fonts/maiandra/MAIAN.TTF</bold>
+	  <italic>etc/resources/fonts/maiandra/MAIAN.TTF</italic>
+	  <boldItalic>etc/resources/fonts/maiandra/MAIAN.TTF</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Maiandra GD, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Maiandra GD, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+    <fontFamily name="Lucida Calligraphy">
+	  <normal>etc/resources/fonts/lucida_calligraphy/LCALLIG.ttf</normal>
+	  <bold>etc/resources/fonts/lucida_calligraphy/LCALLIG.ttf</bold>
+	  <italic>etc/resources/fonts/lucida_calligraphy/LCALLIG.ttf</italic>
+	  <boldItalic>etc/resources/fonts/lucida_calligraphy/LCALLIG.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Lucida Calligraphy, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Lucida Calligraphy, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+    <fontFamily name="Cambria">
+	  <normal>etc/resources/fonts/cambria/cambria.ttf</normal>
+	  <bold>etc/resources/fonts/cambria/cambriab.ttf</bold>
+	  <italic>etc/resources/fonts/cambria/cambriai.ttf</italic>
+	  <boldItalic>etc/resources/fonts/cambria/cambriaz.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Cambria, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Cambria, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+	<fontFamily name="Asap">
+	  <normal>etc/resources/fonts/asap/Asap-Regular.ttf</normal>
+	  <bold>etc/resources/fonts/asap/Asap-Bold.ttf</bold>
+	  <italic>etc/resources/fonts/asap/Asap-Italic.ttf</italic>
+	  <boldItalic>etc/resources/fonts/asap/Asap-BoldItalic.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Asap, Arial, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Asap, Arial, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+	<fontFamily name="Lexend">
+	  <normal>etc/resources/fonts/lexend/Lexend-Regular.ttf</normal>
+	  <bold>etc/resources/fonts/lexend/Lexend-Bold.ttf</bold>
+	  <italic>etc/resources/fonts/lexend/Lexend-Regular.ttf</italic>
+	  <boldItalic>etc/resources/fonts/lexend/Lexend-Bold.ttf</boldItalic>
+	  <pdfEncoding>Identity-H</pdfEncoding>
+	  <pdfEmbedded>true</pdfEmbedded>
+	  <exportFonts>
+		<export key="net.sf.jasperreports.html">Lexend, Helvetica, sans-serif</export>
+		<export key="net.sf.jasperreports.xhtml">Lexend, Helvetica, sans-serif</export>
+	  </exportFonts>
+	</fontFamily>
+	
+</fontFamilies>
