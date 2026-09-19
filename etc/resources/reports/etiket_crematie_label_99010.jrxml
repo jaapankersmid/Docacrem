@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test" pageWidth="252" pageHeight="79" orientation="Landscape" columnWidth="252" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="klantnaam" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="diernaam" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="diersoort_ras" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="crematie_datum" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="install_dir" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="naam_bedrijf" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="factuur_nummer" class="java.lang.String" isForPrompting="false"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="79" splitType="Stretch">
+			<textField>
+				<reportElement x="140" y="15" width="112" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{diernaam}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="31" width="112" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{diersoort_ras}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="47" width="112" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{klantnaam}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="RetainShape" hAlign="Center" onErrorType="Blank">
+				<reportElement key="image-1" x="0" y="0" width="100" height="51"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{install_dir}+"\\etc\\resources\\images\\label_logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="51" width="100" height="28"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{naam_bedrijf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="100" y="15" width="40" height="16"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Naam dier:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="31" width="40" height="16"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Soort/Ras:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="47" width="40" height="16"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Eigenaar:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="63" width="40" height="16"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Datum:]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="140" y="63" width="112" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{crematie_datum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="152" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{factuur_nummer}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
