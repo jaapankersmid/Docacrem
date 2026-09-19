@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="overzicht-kasboek-hondenschool-report" pageWidth="595" pageHeight="842" columnWidth="535" columnSpacing="14" leftMargin="30" rightMargin="30" topMargin="42" bottomMargin="42">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="kasboek_van" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="kasboek_tot" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="kasboek_soort" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Voldaan"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="organisatie_naam" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Demopension"]]></defaultValueExpression>
+	</parameter>
+	<field name="betaalWijze" class="java.lang.String"/>
+	<field name="btw" class="java.math.BigDecimal"/>
+	<field name="factuurNummer" class="java.lang.String"/>
+	<field name="klantnaam" class="java.lang.String"/>
+	<field name="korting" class="java.math.BigDecimal"/>
+	<field name="totaalKosten" class="java.math.BigDecimal"/>
+	<field name="voorschot" class="java.math.BigDecimal"/>
+	<field name="voorschotBetaalWijze" class="java.lang.String"/>
+	<variable name="tot_pin" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{betaalWijze}.equals( "PIN" ) ? $F{totaalKosten} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="tot_bank" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{betaalWijze}.equals( "Bank" ) ? $F{totaalKosten} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="tot_contant" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{betaalWijze}.equals( "Kas" ) ? $F{totaalKosten} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="pin" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $F{betaalWijze}.equals( "PIN" ) ? $F{totaalKosten} : null : $F{voorschotBetaalWijze}.equals( "PIN" ) ? $F{voorschot} : null]]></variableExpression>
+	</variable>
+	<variable name="bank" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $F{betaalWijze}.equals( "Bank" ) ? $F{totaalKosten} : null : $F{voorschotBetaalWijze}.equals( "Bank" ) ? $F{voorschot} : null]]></variableExpression>
+	</variable>
+	<variable name="contant" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $F{betaalWijze}.equals( "Kas" ) ? $F{totaalKosten} : null : $F{voorschotBetaalWijze}.equals( "Kas" ) ? $F{voorschot} : null]]></variableExpression>
+	</variable>
+	<variable name="tot_voorschot_pin" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{voorschotBetaalWijze}.equals( "PIN" ) ? $F{voorschot} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="tot_voorschot_bank" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{voorschotBetaalWijze}.equals( "Bank" ) ? $F{voorschot} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="tot_voorschot_contant" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{voorschotBetaalWijze}.equals( "Kas" ) ? $F{voorschot} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="tot_onbekend" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[!$F{betaalWijze}.equals( "PIN" ) &&
+!$F{betaalWijze}.equals( "Bank" ) &&
+!$F{betaalWijze}.equals( "Kas" ) ? $F{totaalKosten} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="tot_voorschot_onbekend" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[!$F{voorschotBetaalWijze}.equals( "PIN" ) &&
+!$F{voorschotBetaalWijze}.equals( "Bank" ) &&
+!$F{voorschotBetaalWijze}.equals( "Kas" ) ? $F{voorschot} : BigDecimal.ZERO]]></variableExpression>
+	</variable>
+	<variable name="onbekend" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ?
+!$F{betaalWijze}.equals( "PIN" ) &&
+!$F{betaalWijze}.equals( "Bank" ) &&
+!$F{betaalWijze}.equals( "Kas" ) ? $F{totaalKosten} : null :
+!$F{voorschotBetaalWijze}.equals( "PIN" ) &&
+!$F{voorschotBetaalWijze}.equals( "Bank" ) &&
+!$F{voorschotBetaalWijze}.equals( "Kas" ) ? $F{voorschot} : null]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="43" splitType="Stretch">
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-12" x="0" y="0" width="530" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{organisatie_naam}]]></textFieldExpression>
+			</textField>
+			<textField pattern="d MMM yyyy" isBlankWhenNull="false">
+				<reportElement key="textField-13" x="0" y="20" width="530" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Overzicht kasboek hondenschool van " + new java.text.SimpleDateFormat("dd-MM-yyyy").format($P{kasboek_van}) +
+" t/m " + new java.text.SimpleDateFormat("dd-MM-yyyy").format($P{kasboek_tot})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="48" splitType="Stretch">
+			<line>
+				<reportElement key="line-1" x="0" y="47" width="534" height="1"/>
+			</line>
+			<staticText>
+				<reportElement key="staticText-3" x="10" y="27" width="50" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Factuurnr.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-4" x="60" y="27" width="180" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Klantnaam]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-13" x="246" y="27" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[PIN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-14" x="303" y="27" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Bank]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-15" x="360" y="27" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Kas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-16" x="417" y="27" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Onbekend]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-17" x="477" y="27" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Totaal]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement key="rectangle-1" x="0" y="1" width="535" height="18" backcolor="#B4B4B4">
+					<printWhenExpression><![CDATA[Boolean.valueOf($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="textField" x="10" y="0" width="50" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{factuurNummer}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="textField-3" x="60" y="0" width="180" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{klantnaam}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-4" x="246" y="0" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{pin}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-5" x="303" y="0" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{bank}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-6" x="360" y="0" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{contant}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-7" x="417" y="0" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{onbekend}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="28" splitType="Stretch">
+			<line>
+				<reportElement key="line-3" x="0" y="1" width="534" height="1"/>
+			</line>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-8" x="246" y="2" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_pin} : $V{tot_voorschot_pin}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-9" x="303" y="2" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_bank} : $V{tot_voorschot_bank}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-10" x="360" y="2" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_contant} : $V{tot_voorschot_contant}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-11" x="417" y="2" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_onbekend} : $V{tot_voorschot_onbekend}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-16" x="477" y="2" width="53" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[($P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_pin} : $V{tot_voorschot_pin})
+.add
+($P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_bank} : $V{tot_voorschot_bank})
+.add
+($P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_contant} : $V{tot_voorschot_contant})
+.add
+($P{kasboek_soort}.equals( "Voldaan" ) ? $V{tot_onbekend} : $V{tot_voorschot_onbekend})]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="20" splitType="Prevent">
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-14" x="335" y="2" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Pagina " + $V{PAGE_NUMBER} + " van "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="false">
+				<reportElement key="textField-15" x="435" y="2" width="100" height="18"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["" + $V{PAGE_NUMBER} + ""]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
