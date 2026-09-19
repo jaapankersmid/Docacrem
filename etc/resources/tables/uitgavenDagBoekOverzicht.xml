@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Inkoop Dagboek</naam>
+	<query>
+FROM (SELECT f.* FROM kasboek_regel_producten AS f :f.where) AS krp
+JOIN kasboek_uitgaven AS ku ON ku.kasboek_regel_product_id = krp.kasboek_regel_product_id
+JOIN kasboek AS k on k.kasboek_id = ku.kasboek_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>krp.kasboek_regel_product_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.periode_begin_datum</naam>
+			<label>Begindatum</label>
+            <type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>k.periode_weeknummer</naam>
+			<label>Weeknr.</label>
+            <type>integer</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>krp.product_naam</naam>
+			<label>Product</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>krp.product_omschrijving</naam>
+			<label>Omschrijving</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>krp.product_btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>krp.product_aantal</naam>
+			<label>Aantal</label>
+			<type>decimal</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>krp.product_prijs</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>krp.product_betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

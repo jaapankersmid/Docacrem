@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Omzet Grootboek</naam>
+	<query>
+FROM (
+  SELECT 1 AS id, IF(ISNULL(gr.naam) OR gr.naam = '','Onbekend',gr.naam) AS naam, SUM(totaal) AS totaal, o.product_btw, SUM(o.korting_bedrag) AS korting_bedrag
+  FROM (
+    SELECT DISTINCT p.factuur_regel_product_id, p.grootboek_rekening, p.product_prijs * p.product_aantal AS totaal, p.product_btw, p.korting_bedrag
+    FROM (
+	  SELECT p.factuur_regel_product_id, p.factuur_regel_id, IF(p.product_naam LIKE '% Seizoen',(SELECT gr_.rekening_nummer FROM groot_boek_rekeningen AS gr_ where gr_.groot_boek_rekening_id = (SELECT c.waarde_long FROM configuraties AS c WHERE c.naam = 'grootboekOnderdeelPensionVerblijf')),p.grootboek_rekening) AS grootboek_rekening, p.product_prijs, p.product_aantal, p.product_btw, p.korting_bedrag, 'pension' AS onderdeel
+	  FROM factuur_regel_producten AS p
+	) AS p
+    INNER JOIN factuur_regels AS fr ON fr.factuur_regel_id = p.factuur_regel_id
+    INNER JOIN facturen AS o ON o.factuur_id = fr.factuur_id
+    WHERE o.geannuleerd IS FALSE :f.where
+
+    UNION ALL
+
+    SELECT DISTINCT p.shop_regel_product_id, p.grootboek_rekening, p.product_prijs * p.product_aantal, p.product_btw, 0.0
+    FROM (
+	  SELECT p.shop_regel_product_id, p.shop_id, IF(p.grootboek_rekening IS NULL OR p.grootboek_rekening = '',(SELECT gr_.rekening_nummer FROM groot_boek_rekeningen AS gr_ where gr_.groot_boek_rekening_id = (SELECT c.waarde_long FROM configuraties AS c WHERE c.naam = 'grootboekOnderdeelShop')),p.grootboek_rekening) AS grootboek_rekening, p.product_prijs, p.product_aantal, p.product_btw, 0.0, 'shop' AS onderdeel
+	  FROM shop_regel_producten AS p
+	) AS p
+    INNER JOIN (SELECT sf.*, NULL AS gereserveerd_van, NULL AS gereserveerd_tot FROM shop_facturen AS sf) AS o ON o.shop_id = p.shop_id
+    WHERE 1=1 :f.where
+
+    UNION ALL
+
+    SELECT DISTINCT p.salon_afspraak_regel_product_id, p.grootboek_rekening, p.product_prijs * p.product_aantal AS totaal, p.product_btw, 0.0
+    FROM (
+	  SELECT p.salon_afspraak_regel_product_id, p.salon_afspraak_regel_id, IF(p.grootboek_rekening IS NULL OR p.grootboek_rekening = '',(SELECT gr_.rekening_nummer FROM groot_boek_rekeningen AS gr_ where gr_.groot_boek_rekening_id = (SELECT c.waarde_long FROM configuraties AS c WHERE c.naam = 'grootboekOnderdeelSalon')),p.grootboek_rekening) AS grootboek_rekening, p.product_prijs, p.product_aantal, p.product_btw, 0.0, 'salon' AS onderdeel
+	  FROM salon_afspraak_regel_producten AS p
+	) AS p
+    INNER JOIN salon_afspraak_regels AS sar ON sar.salon_afspraak_regel_id = p.salon_afspraak_regel_id
+    INNER JOIN (SELECT sa.*, NULL AS gereserveerd_van, NULL AS gereserveerd_tot FROM salon_afspraken AS sa) AS o ON o.salon_afspraak_id = sar.salon_afspraak_id
+    WHERE o.geannuleerd IS FALSE :f.where
+  ) AS o
+  LEFT JOIN groot_boek_rekeningen AS gr ON gr.rekening_nummer = o.grootboek_rekening
+  GROUP BY o.grootboek_rekening, o.product_btw
+) AS o
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>o.id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>o.naam</naam>
+			<label>Grootboek</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>o.totaal</naam>
+			<label>Totaal</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>o.totaal / (100 + o.product_btw) * 100</naam>
+			<label>Totaal excl.</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>o.totaal - (o.totaal / (100 + o.product_btw) * 100)</naam>
+			<label>BTW Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>o.product_btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>o.korting_bedrag</naam>
+			<label>Korting</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

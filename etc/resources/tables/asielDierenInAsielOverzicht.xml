@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<overzichtModel>
+<naam>Overzicht Dieren in Asiel</naam>
+<query>
+FROM (SELECT v.* FROM asiel_verblijven AS v :f.where) AS v
+JOIN asiel_dieren AS d ON v.asiel_dier_id = d.asiel_dier_id
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id
+LEFT JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id
+LEFT JOIN asiel_opname_soorten AS i ON v.asiel_opname_soort_id = i.opname_soort_id
+LEFT JOIN kennel_asiel AS kennel ON v.kennel_asiel_id = kennel.kennel_asiel_id
+LEFT JOIN sector_asiel AS sector ON kennel.sector_asiel_id = sector.sector_asiel_id
+	</query>
+<group>false</group>
+<order/>
+<highlighters/>
+<velden>
+<veld>
+<naam>v.asiel_verblijf_id</naam>
+<label>ID</label>
+<type/>
+<format/>
+<width>75</width>
+<viewIndex>-1</viewIndex>
+<visible>false</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>CONCAT('V',v.verblijf_nummer)</naam>
+<label>V.nr.</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>0</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>d.identificatie_nummer</naam>
+<label>Identificatienr.</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>1</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>d.naam</naam>
+<label>Dier</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>2</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>s.naam</naam>
+<label>Diersoort</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>3</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+<label>Ras</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>4</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+<label>Geslacht</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>5</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+<label>Vacht</label>
+<type/>
+<format/>
+<width>75</width>
+<viewIndex>-1</viewIndex>
+<visible>false</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>d.kleur</naam>
+<label>Kleur</label>
+<type/>
+<format/>
+<width>75</width>
+<viewIndex>-1</viewIndex>
+<visible>false</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>i.naam</naam>
+<label>In</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>6</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>v.opname_datum</naam>
+<label>Datum in</label>
+<type>date</type>
+<format>d MMM yyyy</format>
+<width>190</width>
+<viewIndex>7</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>concat(sector.naam, ' - ', kennel.kennel_nummer)</naam>
+<label>Kennel</label>
+<type/>
+<format/>
+<width>75</width>
+<viewIndex>-1</viewIndex>
+<visible>false</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>TO_DAYS(IF(v.vertrek_datum IS NULL,curdate(),v.vertrek_datum)) - TO_DAYS(v.opname_datum)</naam>
+<label>In asiel</label>
+<type/>
+<format/>
+<width>189</width>
+<viewIndex>8</viewIndex>
+<visible>true</visible>
+<property>false</property>
+</veld>
+<veld>
+<naam>
+(SELECT CAST(SUM(DATEDIFF(v2.vertrek_datum,v2.opname_datum)) / COUNT(v2.asiel_verblijf_id) AS SIGNED INT) AS gemiddeld_verblijf
+FROM asiel_verblijven AS v2
+WHERE v2.asiel_dier_id=d.asiel_dier_id
+  AND NOT v2.vertrek_datum IS NULL)
+			</naam>
+<label>Gemiddeld</label>
+<type/>
+<format/>
+<width>75</width>
+<viewIndex>-1</viewIndex>
+<visible>false</visible>
+<property>false</property>
+</veld>
+</velden>
+</overzichtModel>

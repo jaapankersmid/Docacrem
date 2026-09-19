@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Crematies</naam>
+	<query>
+FROM (SELECT f.*, (IF(ISNULL((SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f.crematorium_factuur_id)),0,(SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f.crematorium_factuur_id))) AS totaal_betalingen FROM crematorium_facturen AS f :f.where) AS f
+JOIN klanten AS k ON f.klant_id = k.klant_id
+LEFT JOIN dieren AS d ON f.crematorium_factuur_id = d.crematorium_factuur_id
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id
+LEFT JOIN diersoort AS ds ON r.diersoort_id = ds.diersoort_id
+	</query>
+	<velden>
+		<veld>
+			<naam>f.crematorium_factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>ds.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.crematie_datum</naam>
+			<label>Uitvaartdatum</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.crematie_tijd</naam>
+			<label>Uitvaarttijd</label>
+			<type>date</type>
+			<format>HH:mm</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(DATE_FORMAT(b.betaal_datum, '%d-%m-%Y') ORDER BY b.betaal_datum ASC separator '; ') AS betaal_datum FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f.crematorium_factuur_id)</naam>
+			<label>Betaaldatum</label>
+			<visible>true</visible>
+			<order_column>(SELECT min(b.betaal_datum) AS betaal_datum FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f.crematorium_factuur_id)</order_column>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(b.betaal_wijze ORDER BY b.betaal_datum ASC separator '; ') AS betaal_wijze FROM betalingen AS b INNER JOIN crematorium_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.crematorium_factuur_id = f.crematorium_factuur_id)</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.korting_bedrag</naam>
+			<label>Korting</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.totaal_betalingen</naam>
+			<label>Betaald</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(IF(ISNULL((SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id)),0,(SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id)) + f.crematie_prijs + f.prijs_individueel + f.as_in_urn + f.as_verstrooing + f.kosten_vervoer + f.extra_vervoer + f.extra_kosten + f.box + f.gedenkplaat + f.administratie_kosten - f.korting_bedrag - f.totaal_betalingen)</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+        <veld>
+			<naam>(((IF(ISNULL((SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id)),0,(SELECT sum(crp.product_prijs * crp.product_aantal) FROM crematorium_regel_producten AS crp WHERE f.crematorium_factuur_id=crp.crematorium_factuur_id))) + f.crematie_prijs + f.prijs_individueel + f.as_in_urn + f.as_verstrooing + f.kosten_vervoer + f.extra_vervoer + f.extra_kosten + f.box + f.gedenkplaat + f.administratie_kosten - f.korting_bedrag) / (100 + f.btw_percentage)) * f.btw_percentage</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

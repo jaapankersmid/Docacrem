@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Kantine Inkomsten</naam>
+	<query>
+FROM 
+(SELECT 
+   f.*, 
+  sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten as totaal_bedrag,
+  sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten - (sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw) + ((f.administratie_kosten) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal) + f.administratie_kosten)) AS excl_btw,
+  sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) - (f.korting_bedrag) + f.administratie_kosten - (sum((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_hoog,
+  sum(IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0)) - (sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_laag,
+  sum(IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0)) - (sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_nul,
+  (sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw) + ((f.administratie_kosten) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal) + f.administratie_kosten)) AS btw,
+  (sum((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) / (100 + p.product_btw) * p.product_btw)) AS btw_hoog,
+  (sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS btw_laag,
+  (sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS btw_nul
+ FROM (SELECT f.* FROM kantine_bonnen AS f :f.where) AS f
+ JOIN kantine_bon_regel_producten AS p ON f.kantine_bon_id = p.kantine_bon_id
+ GROUP BY f.kantine_bon_id) AS f
+JOIN kantine_bon_regel_producten AS p ON f.kantine_bon_id = p.kantine_bon_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.kantine_bon_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Bonnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten</naam>
+			<label>Betaald</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag</naam>
+			<label>Totaal</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * excl_btw</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * excl_btw_hoog</naam>
+			<label>Excl. BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * excl_btw_laag</naam>
+			<label>Excl. BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * excl_btw_nul</naam>
+			<label>Excl. BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * btw_hoog</naam>
+			<label>BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * btw_laag</naam>
+			<label>BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten) * 100 / totaal_bedrag / 100 * btw_nul</naam>
+			<label>BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

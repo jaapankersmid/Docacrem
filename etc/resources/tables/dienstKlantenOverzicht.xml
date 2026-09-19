@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Dienst Klanten</naam>
+	<query>
+FROM (SELECT k.* FROM klanten AS k :f.where) AS k
+JOIN adres AS a ON k.adres_id = a.adres_id
+JOIN contact AS c ON k.contact_id = c.contact_id
+INNER JOIN dienst_contracten AS cc ON k.klant_id = cc.klant_id
+	</query>
+	<group>true</group>
+	<order>Actief DESC</order>
+	<highlighters>inactieve_klanten</highlighters>
+	<velden>
+		<veld>
+			<naam>max(cc.dienst_contract_id)</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+			<order_column>k.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>k.aanhef</naam>
+			<label>Aanhef</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.voorletters</naam>
+			<label>Voorletters</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.tussenvoegsel</naam>
+			<label>Tussenvoegsel</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.achternaam</naam>
+			<label>Achternaam</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',a.straat,a.huisnummer),'  ',' ')</naam>
+			<label>Adres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.straat</naam>
+			<label>Straat</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>a.huisnummer</naam>
+			<label>Huisnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>a.postcode</naam>
+			<label>Postcode</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.woonplaats</naam>
+			<label>Woonplaats</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.land</naam>
+			<label>Land</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>c.telefoonnummer</naam>
+			<label>Telefoonnr. 1</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>c.mobielnummer</naam>
+			<label>Telefoonnr. 2</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>k.email_adres</naam>
+			<label>Emailadres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>k.extern_klant_nummer</naam>
+			<label>Extern klantnr.</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.naam FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Kleurcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.kleur FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+			<type>color</type>
+		</veld>
+        <veld>
+            <naam>k.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM dieren AS d WHERE d.overleden IS FALSE AND d.klant_id = k.klant_id AND d.dier_id IN (SELECT ccr.dier_id FROM dienst_contract_regels AS ccr INNER JOIN dienst_contracten AS cc1 ON ccr.dienst_contract_id = cc1.dienst_contract_id WHERE cc1.klant_id = k.klant_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>k.actief</naam>
+			<label>Actief</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+	</velden>
+</overzichtModel>

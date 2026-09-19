@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Kantine Bonnen</naam>
+	<query>
+FROM (SELECT f.* FROM kantine_bonnen AS f :f.where) AS f
+JOIN kantine_bon_regel_producten AS p ON f.kantine_bon_id = p.kantine_bon_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.kantine_bon_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Bonnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Bon datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.korting_bedrag</naam>
+			<label>Korting</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(NOT ISNULL(f.betaal_datum),0,sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) - f.voorschot_bedrag + f.administratie_kosten)</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) + f.administratie_kosten - (sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw) + ((f.administratie_kosten) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal) + f.administratie_kosten))</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) - (f.korting_bedrag) + f.administratie_kosten - (sum((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) / (100 + p.product_btw) * p.product_btw) + ((f.administratie_kosten) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag) / (sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) + f.administratie_kosten))</naam>
+			<label>Excl. BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0)) - (sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw))</naam>
+			<label>Excl. BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0)) - (sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw))</naam>
+			<label>Excl. BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw) + ((f.administratie_kosten) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal) + f.administratie_kosten))</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) / (100 + p.product_btw) * p.product_btw) + ((f.administratie_kosten) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag) / (sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) + f.administratie_kosten))</naam>
+			<label>BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw))</naam>
+			<label>BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw))</naam>
+			<label>BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

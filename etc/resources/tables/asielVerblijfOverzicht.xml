@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Asielverblijven</naam>
+	<query>
+FROM (SELECT v.* FROM asiel_verblijven AS v :f.where) AS v
+JOIN asiel_dieren AS d ON v.asiel_dier_id = d.asiel_dier_id
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id
+LEFT JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id
+LEFT JOIN gemeenten AS g ON v.gemeente_id = g.gemeente_id
+LEFT JOIN asiel_opname_soorten AS i ON v.asiel_opname_soort_id = i.opname_soort_id
+LEFT JOIN asiel_vertrek_soorten AS u ON v.asiel_vertrek_soort_id = u.vertrek_soort_id
+LEFT JOIN asiel_eigenaren AS ei ON v.eigenaar_in_id = ei.asiel_eigenaar_id
+LEFT JOIN asiel_eigenaren AS eu ON v.eigenaar_uit_id = eu.asiel_eigenaar_id
+LEFT JOIN adres AS eia ON ei.adres_id = eia.adres_id
+LEFT JOIN adres AS eua ON eu.adres_id = eua.adres_id
+LEFT JOIN contact AS eic ON ei.contact_id = eic.contact_id
+LEFT JOIN contact AS euc ON eu.contact_id = euc.contact_id
+LEFT JOIN dieren_ambulance AS dai ON v.dieren_ambulance_in_id = dai.dieren_ambulance_id
+	</query>
+	<velden>
+		<veld>
+			<naam>v.asiel_verblijf_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>CONCAT('V',v.verblijf_nummer)</naam>
+			<label>V.nr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.identificatie_nummer</naam>
+			<label>Identificatienr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.chip_pasnummer</naam>
+			<label>Chipnummer.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>s.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.geboortedatum</naam>
+			<label>Geboren</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[IF(d.`geboortedatum` IS NULL,'',CONCAT(CONCAT(CONCAT(IF(MONTH(NOW())>MONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())>DAYOFMONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`)-1)),'jr. '),IF(MONTH(NOW())<MONTH(d.`geboortedatum`),12-MONTH(d.`geboortedatum`)+MONTH(NOW()),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())<DAYOFMONTH(d.`geboortedatum`),11,MONTH(NOW())-MONTH(d.`geboortedatum`)))),'mnd.'))]]></naam>
+			<label>Leeftijd</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[IF(v.`vertrek_datum` IS NULL,'',CONCAT(CONCAT(CONCAT(IF(MONTH(NOW())>MONTH(v.`vertrek_datum`),YEAR(NOW())-YEAR(v.`vertrek_datum`),IF(MONTH(NOW())=MONTH(v.`vertrek_datum`) AND DAYOFMONTH(NOW())>DAYOFMONTH(v.`vertrek_datum`),YEAR(NOW())-YEAR(v.`vertrek_datum`),YEAR(NOW())-YEAR(v.`vertrek_datum`)-1)),'jr. '),IF(MONTH(NOW())<MONTH(v.`vertrek_datum`),12-MONTH(v.`vertrek_datum`)+MONTH(NOW()),IF(MONTH(NOW())=MONTH(v.`vertrek_datum`) AND DAYOFMONTH(NOW())<DAYOFMONTH(v.`vertrek_datum`),11,MONTH(NOW())-MONTH(v.`vertrek_datum`)))),'mnd.'))]]></naam>
+			<label>Leeftijd vertrek</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>g.naam</naam>
+			<label>Gemeente</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>v.vindplaats</naam>
+			<label>Vindplaats</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',ei.aanhef,ei.voorletters,ei.tussenvoegsel,ei.achternaam),'  ',' ')</naam>
+			<label>Brenger naam</label>
+			<visible>false</visible>
+			<order_column>ei.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',eia.straat,eia.huisnummer),'  ',' ')</naam>
+			<label>Brenger adres</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eia.postcode</naam>
+			<label>Brenger postcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eia.woonplaats</naam>
+			<label>Brenger woonplaats</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eia.land</naam>
+			<label>Brenger land</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eic.telefoonnummer</naam>
+			<label>Brenger telefoonnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eic.mobielnummer</naam>
+			<label>Brenger mobielnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>ei.email_adres</naam>
+			<label>Brenger email</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>i.naam</naam>
+			<label>In</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.opname_datum</naam>
+			<label>Datum in</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',eu.aanhef,eu.voorletters,eu.tussenvoegsel,eu.achternaam),'  ',' ')</naam>
+			<label>Haler naam</label>
+			<visible>false</visible>
+			<order_column>eu.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',eua.straat,eua.huisnummer),'  ',' ')</naam>
+			<label>Haler adres</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eua.postcode</naam>
+			<label>Haler postcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eua.woonplaats</naam>
+			<label>Haler woonplaats</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eua.land</naam>
+			<label>Haler land</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>euc.telefoonnummer</naam>
+			<label>Haler telefoonnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>euc.mobielnummer</naam>
+			<label>Haler mobielnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>eu.email_adres</naam>
+			<label>Haler email</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>u.naam</naam>
+			<label>Uit</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>dai.naam</naam>
+			<label>Dierenambulance</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+			<naam>v.dieren_ambulance_rit_nummer</naam>
+			<label>Dierenambulance ritnr</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.vertrek_datum</naam>
+			<label>Datum uit</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[TO_DAYS(IF(v.vertrek_datum IS NULL,curdate(),IF(v.vertrek_datum>'[vertrekDatumString]','[vertrekDatumString]',v.vertrek_datum))) - TO_DAYS(IF(v.opname_datum IS NULL,'[opnameDatumString]',IF(v.opname_datum<'[opnameDatumString]','[opnameDatumString]',v.opname_datum)))]]></naam>
+			<label>Dagen</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>TO_DAYS(IF(v.vertrek_datum IS NULL,curdate(),v.vertrek_datum)) - TO_DAYS(v.opname_datum)</naam>
+			<label>Totaal</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>
+(SELECT CAST(SUM(DATEDIFF(v2.vertrek_datum,v2.opname_datum)) / COUNT(v2.asiel_verblijf_id) AS SIGNED INT) AS gemiddeld_verblijf
+FROM asiel_verblijven AS v2
+WHERE v2.asiel_dier_id=d.asiel_dier_id
+  AND NOT v2.vertrek_datum IS NULL)
+			</naam>
+			<label>Gemiddeld</label>
+			<visible>false</visible>
+		</veld>
+	</velden>
+</overzichtModel>

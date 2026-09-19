@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Asiel Medicijnlijst</naam>
+	<query><![CDATA[
+FROM (SELECT v.*, medicijn.medicijn_id FROM asiel_verblijven AS v :f.where) AS v
+JOIN asiel_dieren AS d ON v.asiel_dier_id = d.asiel_dier_id 
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id 
+LEFT JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id 
+JOIN lichaamelijk AS lichaamelijk ON d.lichaamelijk_id = lichaamelijk.lichaamelijk_id 
+JOIN lichaamelijk_medicijnen AS lm ON lichaamelijk.lichaamelijk_id = lm.lichaamelijk_id
+JOIN medicijnen AS medicijn ON lm.medicijn_id = medicijn.medicijn_id AND v.medicijn_id = medicijn.medicijn_id
+LEFT JOIN asiel_verblijf_statussen AS u ON v.asiel_verblijf_status_id = u.verblijf_status_id]]>
+	</query>
+	<velden>
+		<veld>
+			<naam>v.asiel_verblijf_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>CONCAT('V',v.verblijf_nummer)</naam>
+			<label>V.nr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.identificatie_nummer</naam>
+			<label>Identificatienr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>s.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.naam</naam>
+			<label>Medicijn</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.begin_datum</naam>
+			<label>Med.van</label>
+			<type>date</type>
+			<format>dd-MM-yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.eind_datum</naam>
+			<label>Med.tot</label>
+			<type>date</type>
+			<format>dd-MM-yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.aantal_ochtend</naam>
+			<label># Ochtend</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.dosering_ochtend</naam>
+			<label>Dosering ochtend</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.aantal_middag</naam>
+			<label># Middag</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>medicijn.dosering_middag</naam>
+			<label>Dosering middag</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.opname_datum</naam>
+			<label>Datum in</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>u.naam</naam>
+			<label>Status</label>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

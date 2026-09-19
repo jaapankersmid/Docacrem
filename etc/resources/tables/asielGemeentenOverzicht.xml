@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Asiel Gemeenten</naam>
+	<query>
+FROM (SELECT v.* FROM asiel_verblijven AS v :f.where) AS v
+JOIN asiel_opname_soorten AS i ON v.asiel_opname_soort_id = i.opname_soort_id
+JOIN asiel_dieren AS d ON v.asiel_dier_id = d.asiel_dier_id
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id
+LEFT JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id
+LEFT JOIN gemeenten AS g ON v.gemeente_id = g.gemeente_id
+LEFT JOIN asiel_vertrek_soorten AS u ON v.asiel_vertrek_soort_id = u.vertrek_soort_id
+	</query>
+	<velden>
+		<veld>
+			<naam>v.asiel_verblijf_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>CONCAT('V',v.verblijf_nummer)</naam>
+			<label>V.nr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.identificatie_nummer</naam>
+			<label>Identificatienr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>s.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>g.naam</naam>
+			<label>Gemeente</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.vindplaats</naam>
+			<label>Vindplaats</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>i.naam</naam>
+			<label>In</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.opname_datum</naam>
+			<label>Datum in</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>u.naam</naam>
+			<label>Uit</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.vertrek_datum</naam>
+			<label>Datum uit</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[TO_DAYS(IF(v.vertrek_datum IS NULL,'[vertrekDatumString]',IF(v.vertrek_datum>'[vertrekDatumString]','[vertrekDatumString]',v.vertrek_datum))) - TO_DAYS(IF(v.opname_datum IS NULL,'[opnameDatumString]',IF(v.opname_datum<'[opnameDatumString]','[opnameDatumString]',v.opname_datum)))]]></naam>
+			<label>Dagen</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[TO_DAYS(IF(v.vertrek_datum IS NULL,'[vertrekDatumString]',v.vertrek_datum)) - TO_DAYS(v.opname_datum)]]></naam>
+			<label>Totaal</label>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

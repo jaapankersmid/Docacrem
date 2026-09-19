@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Pleeggezinnen</naam>
+	<query>
+FROM (SELECT * FROM asiel_eigenaren AS e :f.where) AS e
+JOIN adres AS a ON e.adres_id = a.adres_id
+JOIN contact AS c ON e.contact_id = c.contact_id
+LEFT JOIN pleeg_gezin_verblijven AS pgv ON e.asiel_eigenaar_id = pgv.asiel_eigenaar_id
+LEFT JOIN asiel_verblijven AS av ON pgv.asiel_verblijf_id = av.asiel_verblijf_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>e.asiel_eigenaar_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',e.aanhef,e.voorletters,e.tussenvoegsel,e.achternaam),'  ',' ')</naam>
+			<label>Pleeggezin</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>e.aanhef</naam>
+			<label>Aanhef</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>e.voorletters</naam>
+			<label>Voorletters</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>e.tussenvoegsel</naam>
+			<label>Tussenvoegsel</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>e.achternaam</naam>
+			<label>Achternaam</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',a.straat,a.huisnummer),'  ',' ')</naam>
+			<label>Adres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.straat</naam>
+			<label>Straat</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>a.huisnummer</naam>
+			<label>Huisnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>a.postcode</naam>
+			<label>Postcode</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.woonplaats</naam>
+			<label>Woonplaats</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.land</naam>
+			<label>Land</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>c.telefoonnummer</naam>
+			<label>Telefoonnr. 1</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>c.mobielnummer</naam>
+			<label>Telefoonnr. 2</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>e.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>e.email_adres</naam>
+			<label>Emailadres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>e.extern_klant_nummer</naam>
+			<label>Extern klantnr.</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(ds.naam,'(',pgdp.aantal_plaatsen,')') ORDER BY ds.diersoort_id ASC separator '; ') AS plaatsen_per_diersoort FROM pleeg_gezin_diersoort_plaatsen AS pgdp JOIN diersoort AS ds ON pgdp.diersoort_id = ds.diersoort_id WHERE (e.asiel_eigenaar_id = pgdp.asiel_eigenaar_id))</naam>
+			<label>Plaatsen per diersoort</label>
+			<type>multiline</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT sum(pgdp.aantal_plaatsen) AS aantal_plaatsen FROM pleeg_gezin_diersoort_plaatsen AS pgdp WHERE (e.asiel_eigenaar_id = pgdp.asiel_eigenaar_id AND :diersoortId))</naam>
+			<label>Aantal plaatsen</label>
+			<type>integer</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT sum(pgdp.aantal_plaatsen) AS aantal_plaatsen FROM pleeg_gezin_diersoort_plaatsen AS pgdp WHERE (e.asiel_eigenaar_id = pgdp.asiel_eigenaar_id AND :diersoortId)) - (SELECT count(pgv.pleeg_gezin_verblijf_id) AS aantal_plaatsen FROM pleeg_gezin_verblijven AS pgv JOIN asiel_verblijven AS av ON pgv.asiel_verblijf_id = av.asiel_verblijf_id JOIN asiel_dieren AS ad ON av.asiel_dier_id = ad.asiel_dier_id JOIN rassen AS ras ON ad.ras_id = ras.ras_id AND :diersoortId WHERE (e.asiel_eigenaar_id = pgv.asiel_eigenaar_id AND pgv.tot_datum IS NULL))</naam>
+			<label>Beschikbare plaatsen</label>
+			<type>integer</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS asiel_dieren from asiel_dieren as d inner join asiel_verblijven as av on d.asiel_dier_id = av.asiel_dier_id inner join pleeg_gezin_verblijven as pgv on av.asiel_verblijf_id = pgv.asiel_verblijf_id where pgv.asiel_eigenaar_id = e.asiel_eigenaar_id and (pgv.tot_datum is null or date(pgv.tot_datum) > curdate()))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

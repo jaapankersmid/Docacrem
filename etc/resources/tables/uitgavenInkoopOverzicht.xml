@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Inkoop Uitgaven</naam>
+	<query>
+FROM (SELECT f.* FROM inkoop_factuur AS f :f.where) AS f
+JOIN inkoop_factuur_betalingen AS ifb ON f.inkoop_factuur_id = ifb.inkoop_factuur_id
+JOIN betalingen AS b ON ifb.betaling_id = b.betaling_id
+LEFT JOIN relatie AS k ON f.relatie_id = k.relatie_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.inkoop_factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Relatie</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

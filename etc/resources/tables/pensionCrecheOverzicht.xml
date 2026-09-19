@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Crèche</naam>
+	<query>
+FROM (SELECT * FROM creche_reservering AS f :f.where) AS f
+JOIN klanten AS k ON f.klant_id = k.klant_id
+JOIN creche_reservering_regels AS r ON f.creche_reservering_id = r.creche_reservering_id
+JOIN dieren AS dier ON r.dier_id = dier.dier_id
+JOIN rassen AS ras ON dier.ras_id = ras.ras_id
+JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id
+	</query>
+	<group>true</group>
+	<order>Binnen</order>
+	<highlighters>binnen_buiten</highlighters>
+	<velden>
+		<veld>
+			<naam>f.creche_contract_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+			<order_column>k.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.naam FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Kleurcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(soort.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id LEFT JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Diersoort(en)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(ras.naam,IF(d.kruising,' (kr.)','')) ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Ras(sen)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?')) ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Geslacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(d.gecastreerd,'Ja','Nee') ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Gecastreerd</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.kleur ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Kleur</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[(SELECT group_concat((IF(d.`geboortedatum` IS NULL,'',CONCAT(CONCAT(CONCAT(IF(MONTH(NOW())>MONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())>DAYOFMONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`)-1)),'jr. '),IF(MONTH(NOW())<MONTH(d.`geboortedatum`),12-MONTH(d.`geboortedatum`)+MONTH(NOW()),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())<DAYOFMONTH(d.`geboortedatum`),11,MONTH(NOW())-MONTH(d.`geboortedatum`)))),'mnd.'))) ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.creche_reservering_id = f.creche_reservering_id))]]></naam>
+			<label>Leeftijd</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[(SELECT group_concat(IF((SELECT COUNT(i.inenting_id) FROM lichaamelijk_inentingen AS li JOIN inentingen AS i ON i.inenting_id = li.inenting_id AND i.controle IS TRUE AND eind_datum <= NOW() WHERE li.lichaamelijk_id = d.lichaamelijk_id) > 0 OR (SELECT COUNT(li.inenting_id) FROM lichaamelijk_inentingen AS li WHERE li.lichaamelijk_id = d.lichaamelijk_id) = 0,'Nee','Ja') ORDER BY d.naam ASC separator '; ') AS dieren FROM creche_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.creche_reservering_id = f.creche_reservering_id))]]></naam>
+			<label>Inentingen</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.reservering_nummer</naam>
+			<label>Reserveringsnr.</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>cc.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>f.gereserveerd_van</naam>
+			<label>Gereserveerd van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_tot</naam>
+			<label>Gereserveerd tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(s.naam, ' - ', k.kennel_nummer) ORDER BY s.naam ASC, k.kennel_nummer ASC separator '; ') AS kennels FROM kennels AS k JOIN sectoren AS s ON k.sector_id = s.sector_id JOIN creche_reservering_regels AS r ON k.kennel_id = r.kennel_id WHERE (r.creche_reservering_id = f.creche_reservering_id))</naam>
+			<label>Kennel(s)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gekomen</naam>
+			<label>Binnen</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+		<veld>
+			<naam>f.opgehaald</naam>
+			<label>Buiten</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+		<veld>
+			<naam>f.overnachting</naam>
+			<label>Overnachting</label>
+			<type>boolean</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

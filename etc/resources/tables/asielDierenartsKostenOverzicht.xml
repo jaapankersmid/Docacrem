@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Dierenarts Kosten</naam>
+	<query>
+FROM (
+  SELECT arts.*, dier.naam AS dier_naam, dier.identificatie_nummer AS dier_nummer, 'Inenting' AS handeling, inenting.naam AS handeling_naam, inenting.begin_datum AS begin_datum, inenting.eind_datum AS eind_datum, inenting.kosten
+  FROM dierenarts AS arts
+  JOIN inentingen AS inenting ON inenting.dierenarts_id = arts.dierenarts_id
+  JOIN lichaamelijk_inentingen AS li ON li.inenting_id = inenting.inenting_id
+  JOIN asiel_dieren AS dier ON dier.lichaamelijk_id = li.lichaamelijk_id
+
+  UNION
+
+  SELECT arts.*, dier.naam AS dier_naam, dier.identificatie_nummer AS dier_nummer, 'Medicijn' AS handeling, medicijn.naam AS handeling_naam, medicijn.begin_datum AS begin_datum, medicijn.eind_datum AS eind_datum, medicijn.kosten
+  FROM dierenarts AS arts
+  JOIN medicijnen AS medicijn ON medicijn.dierenarts_id = arts.dierenarts_id
+  JOIN lichaamelijk_medicijnen AS lm ON lm.medicijn_id = medicijn.medicijn_id
+  JOIN asiel_dieren AS dier ON dier.lichaamelijk_id = lm.lichaamelijk_id
+  
+  UNION
+  
+  SELECT arts.*, dier.naam AS dier_naam, dier.identificatie_nummer AS dier_nummer, 'Medische Handeling' AS handeling, mh.naam AS handeling_naam, mh.begin_datum AS begin_datum, mh.eind_datum AS eind_datum, mh.kosten
+  FROM dierenarts AS arts
+  JOIN medische_handelingen AS mh ON mh.dierenarts_id = arts.dierenarts_id
+  JOIN lichaamelijk_medische_handelingen AS lmh ON lmh.medische_handeling_id = mh.medische_handeling_id
+  JOIN asiel_dieren AS dier ON dier.lichaamelijk_id = lmh.lichaamelijk_id
+) AS mh
+:f.where
+	</query>
+	<velden>
+		<veld>
+			<naam>mh.dierenarts_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>mh.naam</naam>
+			<label>Dierenarts</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.dier_naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+			<naam>mh.dier_nummer</naam>
+			<label>Dier identificatie</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.handeling</naam>
+			<label>Handeling</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.handeling_naam</naam>
+			<label>Handeling naam</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.begin_datum</naam>
+			<label>Handeling begin</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.eind_datum</naam>
+			<label>Handeling eind</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.kosten</naam>
+			<label>Kosten</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

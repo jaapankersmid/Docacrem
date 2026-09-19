@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Shop Inkomsten</naam>
+	<query>
+FROM 
+(SELECT 
+   f.*, 
+  (select count(b1.betaling_id) from shop_facturen as f1 inner join shop_factuur_betalingen AS sfb1 on sfb1.shop_id = f1.shop_id inner join betalingen as b1 on sfb1.betaling_id = b1.betaling_id where f1.shop_id = f.shop_id) as aantal_betalingen,
+  (select sum(b1.bedrag) from shop_facturen as f1 inner join shop_factuur_betalingen AS sfb1 on sfb1.shop_id = f1.shop_id inner join betalingen as b1 on sfb1.betaling_id = b1.betaling_id where f1.shop_id = f.shop_id) as totaal_betalingen,
+  (select sum(srp1.product_prijs * srp1.product_aantal) from shop_regel_producten as srp1 where srp1.shop_id = f.shop_id) - (f.korting_bedrag) as totaal_bedrag,
+  sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) as totaal_bedrag_dubbel,
+  sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) - (sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal))) AS excl_btw,
+  sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0)) - (f.korting_bedrag) - (sum(((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) * (1 - (f.korting_bedrag) / (sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),1)))) AS excl_btw_hoog,
+  sum(IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0)) - (sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_laag,
+  sum(IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0)) - (sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_nul,
+  (sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal))) AS btw,
+  (sum(((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS btw_hoog,
+  (sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS btw_laag,
+  (sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal),0))) / (100 + p.product_btw) * p.product_btw)) AS btw_nul
+ FROM (SELECT f.*, b.betaling_id FROM shop_facturen AS f 
+ JOIN shop_factuur_betalingen AS sfb ON f.shop_id = sfb.shop_id
+ JOIN betalingen AS b ON sfb.betaling_id = b.betaling_id :f.where) AS f
+ INNER JOIN shop_regel_producten AS p ON f.shop_id = p.shop_id
+ GROUP BY f.shop_id, f.betaling_id) AS f
+JOIN shop_factuur_betalingen AS sfb ON f.shop_id = sfb.shop_id
+JOIN betalingen AS b ON sfb.betaling_id = b.betaling_id and f.betaling_id = b.betaling_id
+LEFT JOIN klanten AS k ON f.klant_id = k.klant_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.shop_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag - totaal_betalingen</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag</naam>
+			<label>Totaal</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw_hoog</naam>
+			<label>Excl. BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw_laag</naam>
+			<label>Excl. BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw_nul</naam>
+			<label>Excl. BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw_hoog</naam>
+			<label>BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw_laag</naam>
+			<label>BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw_nul</naam>
+			<label>BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

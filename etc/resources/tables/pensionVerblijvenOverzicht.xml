@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Verblijven</naam>
+	<query>
+FROM (SELECT f.* FROM facturen AS f :f.where) AS f
+JOIN klanten AS k ON f.klant_id = k.klant_id
+JOIN factuur_regels AS r ON f.factuur_id = r.factuur_id
+LEFT JOIN factuur_regel_producten AS p ON r.factuur_regel_id = p.factuur_regel_id
+JOIN dieren AS d ON r.dier_id = d.dier_id
+LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id
+LEFT JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id
+LEFT JOIN kennel_verblijf AS kv ON f.factuur_id = kv.factuur_id AND r.dier_id = kv.dier_id
+LEFT JOIN kennels AS kennel ON kv.kennel_id = kennel.kennel_id
+LEFT JOIN sectoren AS sector ON kennel.sector_id = sector.sector_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+			<order_column>k.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.naam FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Klant Kleurcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.kleur FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Klant Kleur</label>
+			<visible>false</visible>
+			<type>color</type>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>soort.naam</naam>
+			<label>Diersoort(en)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>concat(ras.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.geslacht</naam>
+			<label>Geslacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>IF(ISNULL(f.factuur_nummer),f.reservering_nummer,f.factuur_nummer)</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>f.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>f.gereserveerd_van</naam>
+			<label>Gereserveerd van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_tot</naam>
+			<label>Gereserveerd tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_van</naam>
+			<label>Verbleven van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_tot</naam>
+			<label>Verbleven tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>concat(sector.naam, ' - ', kennel.kennel_nummer)</naam>
+			<label>Kennel</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.hdov_id</naam>
+			<label>HDOV.nr.</label>
+			<visible>false</visible>
+		</veld>
+	</velden>
+</overzichtModel>

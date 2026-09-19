@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Eigenaren</naam>
+	<query>
+FROM (SELECT * FROM asiel_eigenaren AS e :f.where) AS e
+JOIN adres AS a ON e.adres_id = a.adres_id
+JOIN contact AS c ON e.contact_id = c.contact_id
+	</query>
+	<velden>
+		<veld>
+			<naam>e.asiel_eigenaar_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',e.aanhef,e.voorletters,e.tussenvoegsel,e.achternaam),'  ',' ')</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>e.aanhef</naam>
+			<label>Aanhef</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>e.voorletters</naam>
+			<label>Voorletters</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>e.tussenvoegsel</naam>
+			<label>Tussenvoegsel</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>e.achternaam</naam>
+			<label>Achternaam</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',a.straat,a.huisnummer),'  ',' ')</naam>
+			<label>Adres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.straat</naam>
+			<label>Straat</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>a.huisnummer</naam>
+			<label>Huisnummer</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>a.postcode</naam>
+			<label>Postcode</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.woonplaats</naam>
+			<label>Woonplaats</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>a.land</naam>
+			<label>Land</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>c.telefoonnummer</naam>
+			<label>Telefoonnr. 1</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>c.mobielnummer</naam>
+			<label>Telefoonnr. 2</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>e.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>e.email_adres</naam>
+			<label>Emailadres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>e.extern_klant_nummer</naam>
+			<label>Extern klantnr.</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS asiel_dieren FROM asiel_dieren AS d WHERE (d.eigenaar_id = e.asiel_eigenaar_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

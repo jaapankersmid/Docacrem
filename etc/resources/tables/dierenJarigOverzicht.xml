@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Dieren Jarig</naam>
+	<query>
+FROM (SELECT D.* FROM dieren AS D :f.where) AS d
+JOIN klanten AS k ON d.klant_id = k.klant_id AND k.actief IS TRUE
+JOIN rassen AS r ON d.ras_id = r.ras_id
+JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id
+	</query>
+	<velden>
+		<veld>
+			<naam>d.klant_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>k.email_adres</naam>
+			<label>Emailadres</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.chip_pasnummer</naam>
+			<label>Chip/Tatoe</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.geboortedatum</naam>
+			<label>Geboren</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[IF(d.`geboortedatum` IS NULL,'',CONCAT(CONCAT(CONCAT(IF(MONTH(NOW())>MONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())>DAYOFMONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`)-1)),'jr. '),IF(MONTH(NOW())<MONTH(d.`geboortedatum`),12-MONTH(d.`geboortedatum`)+MONTH(NOW()),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())<DAYOFMONTH(d.`geboortedatum`),11,MONTH(NOW())-MONTH(d.`geboortedatum`)))),'mnd.'))]]></naam>
+			<label>Leeftijd</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>s.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.gecastreerd</naam>
+			<label>G/S</label>
+			<type>boolean</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.kruising</naam>
+			<label>Kr.</label>
+			<type>boolean</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.naam FROM dier_kleur_codes AS kleur WHERE kleur.dier_kleur_code_id = d.dier_kleur_code_id)</naam>
+			<label>Kleurcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.kleur FROM dier_kleur_codes AS kleur WHERE kleur.dier_kleur_code_id = d.dier_kleur_code_id)</naam>
+			<label>Kleurcode kleur</label>
+			<visible>false</visible>
+			<type>color</type>
+		</veld>
+        <veld>
+            <naam>d.kenmerken</naam>
+            <label>Kenmerken</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+        <veld>
+            <naam>d.bijzonderheden</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+        <veld>
+            <naam>d.gedrag</naam>
+            <label>Gedrag</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+	</velden>
+</overzichtModel>

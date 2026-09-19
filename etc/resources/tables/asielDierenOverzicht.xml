@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Asieldieren</naam>
+	<query>
+FROM (SELECT * FROM asiel_dieren AS D :f.where) AS d
+LEFT JOIN asiel_eigenaren AS e ON d.eigenaar_id = e.asiel_eigenaar_id
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id
+JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id
+	</query>
+	<velden>
+		<veld>
+			<naam>d.asiel_dier_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.identificatie_nummer</naam>
+			<label>Identificatienr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.chip_pasnummer</naam>
+			<label>Chip/Tatoe</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.geboortedatum</naam>
+			<label>Geboren</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>s.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.gecastreerd</naam>
+			<label>G/S</label>
+			<type>boolean</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.kruising</naam>
+			<label>Kr.</label>
+			<type>boolean</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',e.aanhef,e.voorletters,e.tussenvoegsel,e.achternaam),'  ',' ')</naam>
+			<label>Eigenaar</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.naam FROM dier_kleur_codes AS kleur WHERE kleur.dier_kleur_code_id = d.dier_kleur_code_id)</naam>
+			<label>Kleurcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.kleur FROM dier_kleur_codes AS kleur WHERE kleur.dier_kleur_code_id = d.dier_kleur_code_id)</naam>
+			<label>Kleurcode kleur</label>
+			<visible>false</visible>
+			<type>color</type>
+		</veld>
+	</velden>
+</overzichtModel>

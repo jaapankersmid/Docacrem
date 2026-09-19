@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Medische Handelingen</naam>
+	<query>
+<![CDATA[
+FROM (
+  SELECT dier.*, 'Inenting' AS handeling, inenting.naam AS handeling_naam, inenting.begin_datum AS begin_datum, inenting.eind_datum AS eind_datum, inenting.kosten FROM asiel_dieren AS dier
+  JOIN lichaamelijk_inentingen AS li ON dier.lichaamelijk_id = li.lichaamelijk_id
+  JOIN inentingen AS inenting ON li.inenting_id = inenting.inenting_id
+
+  UNION
+
+  SELECT dier.*, 'Medicijn' AS handeling, medicijn.naam AS handeling_naam, medicijn.begin_datum AS begin_datum, medicijn.eind_datum AS eind_datum, medicijn.kosten FROM  asiel_dieren AS dier
+  JOIN lichaamelijk_medicijnen AS li ON dier.lichaamelijk_id = li.lichaamelijk_id
+  JOIN medicijnen AS medicijn ON li.medicijn_id = medicijn.medicijn_id
+  
+  UNION
+  
+  SELECT dier.*, 'Medische Handeling' AS handeling, mh.naam AS handeling_naam, mh.begin_datum AS begin_datum, mh.eind_datum AS eind_datum, mh.kosten FROM  asiel_dieren AS dier
+  JOIN lichaamelijk_medische_handelingen AS li ON dier.lichaamelijk_id = li.lichaamelijk_id
+  JOIN medische_handelingen AS mh ON li.medische_handeling_id = mh.medische_handeling_id
+  WHERE mh.naam <> 'Ontvlooid' AND mh.naam <> 'Ontwormd'
+  
+  UNION
+  
+  SELECT dier.*, 'Ontvlooi/ontworm' AS handeling, mh.naam AS handeling_naam, mh.begin_datum AS begin_datum, mh.eind_datum AS eind_datum, mh.kosten FROM  asiel_dieren AS dier
+  JOIN lichaamelijk_ontvlooid_ontwormd AS li ON dier.lichaamelijk_id = li.lichaamelijk_id
+  JOIN medische_handelingen AS mh ON li.medische_handeling_id = mh.medische_handeling_id
+  WHERE mh.naam = 'Ontvlooid' OR mh.naam = 'Ontwormd'
+) AS mh
+:f.where
+]]>
+	</query>
+	<velden>
+		<veld>
+			<naam>mh.asiel_dier_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>mh.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.handeling</naam>
+			<label>Handeling</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.handeling_naam</naam>
+			<label>Naam</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.begin_datum</naam>
+			<label>Handeling begin</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.eind_datum</naam>
+			<label>Handeling eind</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>mh.kosten</naam>
+			<label>Kosten</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

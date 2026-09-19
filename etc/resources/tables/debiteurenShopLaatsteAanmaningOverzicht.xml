@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Laatste Aanmaning Shop</naam>
+	<query>
+FROM (SELECT f.*, (IF(ISNULL((SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN shop_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.shop_id = f.shop_id)),0,(SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN shop_factuur_betalingen AS cfb ON b.betaling_id = cfb.betaling_id WHERE cfb.shop_id = f.shop_id))) AS totaal_betalingen FROM shop_facturen AS f :f.where) AS f
+LEFT JOIN shop_regel_producten AS p ON f.shop_id = p.shop_id
+LEFT JOIN klanten AS k ON f.klant_id = k.klant_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.shop_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.incasso_datum</naam>
+			<label>Incasso</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>datediff(now(),f.tweede_herinnering)</naam>
+			<label>Dagen open</label>
+			<type>integer</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.korting_bedrag</naam>
+			<label>Korting</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.totaal_betalingen</naam>
+			<label>Betaald</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) - f.totaal_betalingen</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag)</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) - (sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal)))</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(sum(((p.product_prijs * p.product_aantal)) / (100 + p.product_btw) * p.product_btw)) * (1 - (f.korting_bedrag) / (sum(p.product_prijs * p.product_aantal)))</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal) - (f.korting_bedrag) - f.totaal_betalingen</naam>
+			<label>openstaand_bedrag</label>
+			<type>valuta</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+	</velden>
+</overzichtModel>

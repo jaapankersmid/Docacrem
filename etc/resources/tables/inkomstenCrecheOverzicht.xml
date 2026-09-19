@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Crèche Inkomsten</naam>
+	<query>
+FROM (SELECT
+  f.*,
+  (select sum(b1.bedrag) from creche_facturen as f1 inner join creche_factuur_betalingen AS sfb1 on sfb1.creche_factuur_id = f1.creche_factuur_id inner join betalingen as b1 on sfb1.betaling_id = b1.betaling_id where f1.creche_factuur_id = f.creche_factuur_id) as totaal_betalingen,
+  (select sum(p.product_prijs * p.product_aantal - p.korting_bedrag) from creche_factuur_regel_producten as p where p.creche_factuur_id = f.creche_factuur_id) - f.korting_bedrag + f.administratie_kosten as totaal_bedrag,
+  (sum(p.product_prijs * p.product_aantal - p.korting_bedrag) + (f.administratie_kosten - f.korting_bedrag)) - (sum(((p.product_prijs * p.product_aantal - p.korting_bedrag)) / (100 + p.product_btw) * p.product_btw) + (f.administratie_kosten - f.korting_bedrag) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage) AS excl_btw,
+  (sum(((p.product_prijs * p.product_aantal - p.korting_bedrag)) / (100 + p.product_btw) * p.product_btw) + (f.administratie_kosten - f.korting_bedrag) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage) AS btw
+  FROM (SELECT f.*, b.betaling_id FROM creche_facturen AS f 
+  JOIN creche_factuur_betalingen AS cfb ON f.creche_factuur_id = cfb.creche_factuur_id
+  JOIN betalingen AS b ON cfb.betaling_id = b.betaling_id :f.where) AS f
+  INNER JOIN creche_factuur_regel_producten AS p ON f.creche_factuur_id = p.creche_factuur_id
+  GROUP BY f.creche_factuur_id, f.betaling_id) AS f
+JOIN creche_factuur_betalingen AS cfb ON f.creche_factuur_id = cfb.creche_factuur_id
+JOIN betalingen AS b ON cfb.betaling_id = b.betaling_id
+JOIN klanten AS k ON f.klant_id = k.klant_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.creche_factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.administratie_kosten</naam>
+			<label>Administratie</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.korting_bedrag</naam>
+			<label>Korting</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag - totaal_betalingen</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag</naam>
+			<label>Totaal</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag / 100 * excl_btw</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag / 100 * btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

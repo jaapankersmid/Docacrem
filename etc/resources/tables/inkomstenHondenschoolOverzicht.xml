@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Hondenschool Inkomsten</naam>
+	<query>
+FROM 
+(SELECT 
+   f.*, 
+  (select count(b1.betaling_id) from hondenschool_facturen as f1 inner join hondenschool_factuur_betalingen AS hfb1 on hfb1.hondenschool_factuur_id = f1.hondenschool_factuur_id inner join betalingen as b1 on hfb1.betaling_id = b1.betaling_id where f1.hondenschool_factuur_id = f.hondenschool_factuur_id) as aantal_betalingen,
+  f.cursus_prijs + f.extra_kosten - (f.korting_bedrag) as totaal_bedrag,
+  f.cursus_prijs + f.extra_kosten - (f.korting_bedrag) - (((f.cursus_prijs + f.extra_kosten) / (100 + f.btw_percentage) * f.btw_percentage)) * (1 - (f.korting_bedrag) / (f.cursus_prijs + f.extra_kosten)) AS excl_btw,
+  (((f.cursus_prijs + f.extra_kosten) / (100 + f.btw_percentage) * f.btw_percentage)) * (1 - (f.korting_bedrag) / (f.cursus_prijs + f.extra_kosten)) AS btw
+ FROM (SELECT f.* FROM hondenschool_facturen AS f 
+ JOIN hondenschool_factuur_betalingen AS hfb ON f.hondenschool_factuur_id = hfb.hondenschool_factuur_id
+ JOIN betalingen AS b ON hfb.betaling_id = b.betaling_id :f.where) AS f
+ ) AS f
+JOIN klanten AS k ON f.klant_id = k.klant_id
+JOIN hondenschool_factuur_betalingen AS hfb ON f.hondenschool_factuur_id = hfb.hondenschool_factuur_id
+JOIN betalingen AS b ON hfb.betaling_id = b.betaling_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.hondenschool_factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.cursus_datum</naam>
+			<label>Cursusdatum</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag / 100 * excl_btw</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag / 100 * btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

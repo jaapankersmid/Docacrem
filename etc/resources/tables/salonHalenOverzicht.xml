@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Haal</naam>
+	<query>
+FROM (SELECT f.*, (SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN salon_afspraak_betalingen AS sab ON b.betaling_id = sab.betaling_id WHERE sab.salon_afspraak_id = f.salon_afspraak_id) AS totaal_betalingen FROM salon_afspraken AS f :f.where) AS f
+LEFT JOIN klanten AS k ON f.klant_id = k.klant_id
+LEFT JOIN salon_afspraak_regels AS r ON f.salon_afspraak_id = r.salon_afspraak_id
+LEFT JOIN salon_afspraak_regel_producten AS p ON r.salon_afspraak_regel_id = p.salon_afspraak_regel_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.salon_afspraak_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM salon_afspraak_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.salon_afspraak_id = f.salon_afspraak_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(soort.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM salon_afspraak_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id LEFT JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id WHERE (r.salon_afspraak_id = f.salon_afspraak_id))</naam>
+			<label>Diersoort(en)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(ras.naam,IF(d.kruising,' (kr.)','')) ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id WHERE (r.salon_afspraak_id = f.salon_afspraak_id))</naam>
+			<label>Ras(sen)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?')) ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.salon_afspraak_id = f.salon_afspraak_id))</naam>
+			<label>Geslacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_nummer</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.begin_tijd</naam>
+			<label>Van</label>
+			<type>date</type>
+			<format>HH:mm</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.eind_tijd</naam>
+			<label>Tot</label>
+			<type>date</type>
+			<format>HH:mm</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.haal_tijd</naam>
+			<label>Halen</label>
+			<type>date</type>
+			<format>HH:mm</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.breng_tijd</naam>
+			<label>Brengen</label>
+			<type>date</type>
+			<format>HH:mm</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(k.naam) ORDER BY k.naam ASC separator '; ') AS werkplekken FROM werkplekken AS k JOIN salon_afspraak_regels AS r ON k.werkplek_id = r.werkplek_id WHERE (r.salon_afspraak_id = f.salon_afspraak_id))</naam>
+			<label>Werkplek(ken)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>totaal_betalingen</naam>
+			<label>Betaald</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+	</velden>
+</overzichtModel>

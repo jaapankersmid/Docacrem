@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Asiel Nazorg</naam>
+	<query>
+FROM (
+  SELECT 
+    d1.identificatie_nummer,
+    MAX(v1.asiel_verblijf_id) as asiel_verblijf_id
+	FROM (
+	  SELECT max(v1.asiel_verblijf_id) AS asiel_verblijf_id
+	  FROM asiel_verblijven AS v1
+	  GROUP BY v1.asiel_dier_id
+	) AS v_from
+    INNER JOIN asiel_verblijven as v1 ON v_from.asiel_verblijf_id = v1.asiel_verblijf_id
+    INNER JOIN asiel_dieren as d1 ON v1.asiel_dier_id=d1.asiel_dier_id
+	INNER JOIN asiel_vertrek_soorten AS u1 ON v1.asiel_vertrek_soort_id=u1.vertrek_soort_id
+	WHERE NOT v1.vertrek_datum IS NULL 
+	  AND v1.nazorg_gehad IS FALSE
+	  AND d1.overleden IS FALSE
+	  AND u1.naam = 'Geplaatst'
+    GROUP BY identificatie_nummer) AS sub
+JOIN asiel_verblijven as v ON sub.asiel_verblijf_id=v.asiel_verblijf_id
+JOIN asiel_vertrek_soorten AS u ON v.asiel_vertrek_soort_id=u.vertrek_soort_id
+JOIN asiel_dieren as d ON v.asiel_dier_id=d.asiel_dier_id
+LEFT JOIN asiel_eigenaren as e ON d.eigenaar_id=e.asiel_eigenaar_id
+LEFT JOIN rassen AS r ON d.ras_id = r.ras_id
+LEFT JOIN diersoort AS s ON r.diersoort_id = s.diersoort_id
+	</query>
+	<highlighters>nazorgVerstuurd</highlighters>
+	<velden>
+		<veld>
+			<naam>v.asiel_verblijf_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>CONCAT('V',v.verblijf_nummer)</naam>
+			<label>V.nr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',e.aanhef,e.voorletters,e.tussenvoegsel,e.achternaam),'  ',' ')</naam>
+			<label>Eigenaar</label>
+			<visible>true</visible>
+			<order_column>e.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>e.email_adres</naam>
+			<label>Emailadres</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.identificatie_nummer</naam>
+			<label>Identificatienr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>s.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(r.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = d.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>d.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>v.vertrek_datum</naam>
+			<label>Datum uit</label>
+			<type>date</type>
+			<format>d MMM yyyy</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.nazorg_verstuurd</naam>
+			<label>Nazorg verstuurd</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+		<veld>
+			<naam>replace(concat_ws(' ',e.aanhef,e.voorletters,e.tussenvoegsel,e.achternaam),'  ',' ')</naam>
+			<label>_eigenaarnaam_</label>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>_diernaam_</label>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+		<veld>
+			<naam>e.email_adres</naam>
+			<label>_email_adres_</label>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+	</velden>
+</overzichtModel>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Halen</naam>
+	<query>
+FROM (SELECT f.*, (IF(ISNULL((SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN pension_reservering_betalingen AS prb ON b.betaling_id = prb.betaling_id WHERE prb.factuur_id = f.factuur_id)),0,(SELECT sum(b.bedrag) FROM betalingen AS b INNER JOIN pension_reservering_betalingen AS prb ON b.betaling_id = prb.betaling_id WHERE prb.factuur_id = f.factuur_id))) AS totaal_betalingen FROM facturen AS f :f.where) AS f
+JOIN klanten AS k ON f.klant_id = k.klant_id
+JOIN factuur_regels AS r ON f.factuur_id = r.factuur_id
+LEFT JOIN factuur_regel_producten AS p ON r.factuur_regel_id = p.factuur_regel_id
+	</query>
+	<group>true</group>
+	<order>Buiten</order>
+	<highlighters>buiten</highlighters>
+	<velden>
+		<veld>
+			<naam>f.factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+			<order_column>k.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.naam FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Klant Kleurcode</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT kleur.kleur FROM kleur_codes AS kleur WHERE kleur.kleur_code_id = k.kleur_code_id)</naam>
+			<label>Klant Kleur</label>
+			<visible>false</visible>
+			<type>color</type>
+		</veld>
+		<veld>
+			<naam>k.email_adres</naam>
+			<label>Emailadres</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.chip_pasnummer ORDER BY d.chip_pasnummer ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Chipnummer(s)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(soort.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id LEFT JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Diersoort(en)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(ras.naam,IF(d.kruising,' (kr.)','')) ORDER BY d.naam ASC separator '; ') AS rassen FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Ras(sen)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?')) ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(d.gecastreerd,'Ja','Nee') ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Gecastreerd</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.kleur ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Kleur</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(DATE_FORMAT(i.begin_datum,'%d-%m-%Y') ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id JOIN lichaamelijk_inentingen AS li ON li.lichaamelijk_id = d.lichaamelijk_id JOIN inentingen AS i ON i.inenting_id = li.inenting_id WHERE (r.factuur_id = f.factuur_id) ORDER BY i.begin_datum DESC LIMIT 1)</naam>
+			<label>Laatste inentingsdatum</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam><![CDATA[(SELECT group_concat((IF(d.`geboortedatum` IS NULL,'',CONCAT(CONCAT(CONCAT(IF(MONTH(NOW())>MONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())>DAYOFMONTH(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`),YEAR(NOW())-YEAR(d.`geboortedatum`)-1)),'jr. '),IF(MONTH(NOW())<MONTH(d.`geboortedatum`),12-MONTH(d.`geboortedatum`)+MONTH(NOW()),IF(MONTH(NOW())=MONTH(d.`geboortedatum`) AND DAYOFMONTH(NOW())<DAYOFMONTH(d.`geboortedatum`),11,MONTH(NOW())-MONTH(d.`geboortedatum`)))),'mnd.'))) ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))]]></naam>
+			<label>Leeftijd</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(vc.naam ORDER BY d.naam ASC separator '; ') AS voedingscategorie
+ FROM factuur_regels AS r
+ JOIN dieren as d on d.dier_id = r.dier_id
+ LEFT JOIN voeding_categorien AS vc ON vc.voeding_categorie_id = d.voeding_categorie_id
+ WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Voedingscategorie</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(a.afbeelding_aantal = 0 is null or a.afbeelding_aantal = 0,'Nee','Ja') ORDER BY d.naam ASC separator '; ') AS afbeeldingen
+ FROM factuur_regels AS r
+ JOIN dieren as d on d.dier_id = r.dier_id
+ LEFT JOIN (select da.dier_id, count(a.afbeelding_id) as afbeelding_aantal from dier_afbeeldingen as da inner join afbeeldingen as a on a.afbeelding_id = da.afbeelding_id group by da.dier_id) AS a ON a.dier_id = r.dier_id
+ WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Afbeeldingen</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(ISNULL(f.factuur_nummer),f.reservering_nummer,f.factuur_nummer)</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>f.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>f.gereserveerd_van</naam>
+			<label>Gereserveerd van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_tot</naam>
+			<label>Gereserveerd tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_van</naam>
+			<label>Verbleven van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_tot</naam>
+			<label>Verbleven tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>datediff(f.gereserveerd_tot,f.gereserveerd_van)</naam>
+			<label>Nachten</label>
+            <type>integer</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT IF(COUNT(frp.factuur_regel_product_id) > 0,'Ja','') AS wassen FROM factuur_regels AS fr JOIN factuur_regel_producten AS frp ON frp.factuur_regel_id = fr.factuur_regel_id AND (frp.product_naam LIKE '%wassen%' OR frp.product_naam LIKE '%wasbeurt%') WHERE fr.factuur_id = f.factuur_id)</naam>
+			<label>Wassen</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(s.naam, ' - ', k.kennel_nummer) ORDER BY s.naam ASC, k.kennel_nummer ASC separator '; ') AS kennels FROM kennels AS k JOIN sectoren AS s ON k.sector_id = s.sector_id JOIN kennel_verblijf AS kv ON k.kennel_id = kv.kennel_id WHERE (kv.factuur_id = f.factuur_id))</naam>
+			<label>Kennel(s)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.hdov_id</naam>
+			<label>HDOV.nr.</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(f.korting_bedrag + f.korting_verblijf_bedrag) + (select sum(r1.groeps_korting_totaal) from factuur_regels as r1 where r1.factuur_id=f.factuur_id)</naam>
+			<label>Korting</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>totaal_betalingen</naam>
+			<label>Betaald</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (f.korting_bedrag + f.korting_verblijf_bedrag) - f.totaal_betalingen - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (f.korting_bedrag + f.korting_verblijf_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (f.korting_bedrag + f.korting_verblijf_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id) - (sum(((p.product_prijs * p.product_aantal - p.korting_bedrag)) / (100 + p.product_btw) * p.product_btw) - (((select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag + f.korting_verblijf_bedrag) / (sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)))</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(sum(((p.product_prijs * p.product_aantal - p.korting_bedrag)) / (100 + p.product_btw) * p.product_btw) - (((select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag + f.korting_verblijf_bedrag) / (sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)))</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.opgehaald</naam>
+			<label>Buiten</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+	</velden>
+</overzichtModel>

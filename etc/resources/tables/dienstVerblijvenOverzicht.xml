@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Dienst Verblijven</naam>
+	<query>
+FROM (SELECT f.* FROM dienst_reservering AS f :f.where) AS f
+JOIN dienst_contracten AS cc ON f.dienst_contract_id = cc.dienst_contract_id
+JOIN klanten AS k ON f.klant_id = k.klant_id
+JOIN dienst_reservering_regels AS r ON f.dienst_reservering_id = r.dienst_reservering_id
+JOIN dieren AS dier ON r.dier_id = dier.dier_id
+JOIN rassen AS ras ON dier.ras_id = ras.ras_id
+JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id
+LEFT JOIN voertuig AS v ON cc.voertuig_id = v.voertuig_id
+	</query>
+	<group>true</group>
+	<order>Binnen</order>
+	<highlighters>binnen_buiten</highlighters>
+	<velden>
+		<veld>
+			<naam>f.dienst_contract_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+			<order_column>k.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM dienst_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.dienst_reservering_id = f.dienst_reservering_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(soort.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM dienst_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id LEFT JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id WHERE (r.dienst_reservering_id = f.dienst_reservering_id))</naam>
+			<label>Diersoort(en)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(concat(ras.naam,IF(d.kruising,' (kr.)','')) ORDER BY d.naam ASC separator '; ') AS dieren FROM dienst_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id WHERE (r.dienst_reservering_id = f.dienst_reservering_id))</naam>
+			<label>Ras(sen)</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT group_concat(IF(d.geslacht = 'Mannelijk','M',IF(d.geslacht = 'Vrouwelijk','V','?')) ORDER BY d.naam ASC separator '; ') AS dieren FROM dienst_reservering_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.dienst_reservering_id = f.dienst_reservering_id))</naam>
+			<label>Geslacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.reservering_nummer</naam>
+			<label>Reserveringsnr.</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>f.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>f.gereserveerd_van</naam>
+			<label>Gereserveerd van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_tot</naam>
+			<label>Gereserveerd tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.tarief_berekening</naam>
+			<label>Dagdeel</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.nummer</naam>
+			<label>Voertuig</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gekomen</naam>
+			<label>Binnen</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+		<veld>
+			<naam>f.opgehaald</naam>
+			<label>Buiten</label>
+			<type>boolean</type>
+			<visible>false</visible>
+			<property>true</property>
+		</veld>
+	</velden>
+</overzichtModel>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Pension Inkomsten</naam>
+	<query>
+FROM 
+(SELECT 
+   f.*, 
+  (select count(b1.betaling_id) from facturen as f1 inner join pension_reservering_betalingen AS prb1 on prb1.factuur_id = f1.factuur_id inner join betalingen as b1 on prb1.betaling_id = b1.betaling_id where f1.factuur_id = f.factuur_id) as aantal_betalingen,
+  (select sum(b1.bedrag) from facturen as f1 inner join pension_reservering_betalingen AS prb1 on prb1.factuur_id = f1.factuur_id inner join betalingen as b1 on prb1.betaling_id = b1.betaling_id where f1.factuur_id = f.factuur_id) as totaal_betalingen,
+  ((select sum(p1.product_prijs * p1.product_aantal - p1.korting_bedrag) FROM factuur_regels as fr1 INNER JOIN factuur_regel_producten AS p1 ON fr1.factuur_regel_id = p1.factuur_regel_id where fr1.factuur_id=f.factuur_id) - (f.korting_bedrag + f.korting_verblijf_bedrag) - (select sum(fr1.groeps_korting_totaal + fr1.pension_toeslag_totaal) FROM factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) as totaal_bedrag,
+  (select sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (f.korting_bedrag + f.korting_verblijf_bedrag) - (select sum(fr.groeps_korting_totaal + fr.pension_toeslag_totaal) from factuur_regels as fr where fr.factuur_id=f.factuur_id)) as totaal_bedrag_dubbel,
+  sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (f.korting_bedrag + f.korting_verblijf_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id) - (sum(((p.product_prijs * p.product_aantal - p.korting_bedrag)) / (100 + p.product_btw) * p.product_btw) - (((select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag + f.korting_verblijf_bedrag) / (sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id))) AS excl_btw,
+  sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal - p.korting_bedrag),0)) - (f.korting_bedrag + f.korting_verblijf_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id) - (sum(((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal - p.korting_bedrag),0))) / (100 + p.product_btw) * p.product_btw) - (((select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag + f.korting_verblijf_bedrag) / (sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal - p.korting_bedrag),1)) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id))) AS excl_btw_hoog,
+  sum(IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal - p.korting_bedrag),0)) - (sum(((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal - p.korting_bedrag),0))) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_laag,
+  sum(IF(p.product_btw = 0,(p.product_prijs * p.product_aantal - p.korting_bedrag),0)) - (sum(((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal - p.korting_bedrag),0))) / (100 + p.product_btw) * p.product_btw)) AS excl_btw_nul,
+  (sum(((p.product_prijs * p.product_aantal - p.korting_bedrag)) / (100 + p.product_btw) * p.product_btw) - (((select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag + f.korting_verblijf_bedrag) / (sum(p.product_prijs * p.product_aantal - p.korting_bedrag) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id))) AS btw,
+  (sum(((IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal - p.korting_bedrag),0))) / (100 + p.product_btw) * p.product_btw) - (((select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id)) / (100 + f.factuur_btw_percentage) * f.factuur_btw_percentage)) * (1 - (f.korting_bedrag + f.korting_verblijf_bedrag) / (sum(IF(p.product_btw = 19 OR p.product_btw = 21,(p.product_prijs * p.product_aantal - p.korting_bedrag),1)) - (select sum(groeps_korting_totaal + pension_toeslag_totaal) from factuur_regels as fr1 where fr1.factuur_id=f.factuur_id))) AS btw_hoog,
+  (sum((IF(p.product_btw = 6 OR p.product_btw = 9,(p.product_prijs * p.product_aantal - p.korting_bedrag),0)) / (100 + p.product_btw) * p.product_btw)) AS btw_laag,
+  (sum((IF(p.product_btw = 0,(p.product_prijs * p.product_aantal - p.korting_bedrag),0)) / (100 + p.product_btw) * p.product_btw)) AS btw_nul
+ FROM (SELECT f.* FROM facturen AS f 
+ JOIN pension_reservering_betalingen AS prb ON f.factuur_id = prb.factuur_id
+ JOIN betalingen AS b ON prb.betaling_id = b.betaling_id :f.where) AS f
+ INNER JOIN factuur_regels AS fr ON f.factuur_id = fr.factuur_id
+ INNER JOIN factuur_regel_producten AS p ON fr.factuur_regel_id = p.factuur_regel_id
+ GROUP BY f.factuur_id) AS f
+JOIN klanten AS k ON f.klant_id = k.klant_id
+JOIN pension_reservering_betalingen AS prb ON f.factuur_id = prb.factuur_id
+JOIN betalingen AS b ON prb.betaling_id = b.betaling_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>f.factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+			<naam>(SELECT group_concat(d.naam ORDER BY d.naam ASC separator '; ') AS dieren FROM factuur_regels AS r JOIN dieren AS d ON r.dier_id = d.dier_id WHERE (r.factuur_id = f.factuur_id))</naam>
+			<label>Dier(en)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(ISNULL(f.factuur_nummer),f.reservering_nummer,f.factuur_nummer)</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_van</naam>
+			<label>Gereserveerd van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_tot</naam>
+			<label>Gereserveerd tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_van</naam>
+			<label>Verbleven van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_tot</naam>
+			<label>Verbleven tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.factuur_datum</naam>
+			<label>Factuur datum</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.eerste_herinnering</naam>
+			<label>1e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.tweede_herinnering</naam>
+			<label>2e Herinnering</label>
+			<type>date</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_wijze</naam>
+			<label>Betaalwijze</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.betaal_datum</naam>
+			<label>Betaal datum</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag</naam>
+			<label>Bedrag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag - totaal_betalingen</naam>
+			<label>Openstaand</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_betalingen</naam>
+			<label>Betalingen</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>totaal_bedrag</naam>
+			<label>Totaal</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw</naam>
+			<label>Excl. BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw_hoog</naam>
+			<label>Excl. BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw_laag</naam>
+			<label>Excl. BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * excl_btw_nul</naam>
+			<label>Excl. BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw</naam>
+			<label>BTW</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw_hoog</naam>
+			<label>BTW Hoog</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw_laag</naam>
+			<label>BTW Laag</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>b.bedrag * 100 / totaal_bedrag_dubbel / 100 * btw_nul</naam>
+			<label>BTW Nul</label>
+			<type>valuta</type>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Hondenschool Wachtlijst</naam>
+	<query>
+FROM (SELECT * FROM hondenschool_wachtlijst AS hw :f.where) AS hw
+INNER JOIN dieren AS d ON hw.dier_id = d.dier_id
+INNER JOIN klanten AS k ON d.klant_id = k.klant_id
+INNER JOIN hondenschool_cursus AS hc ON hw.hondenschool_cursus_id = hc.hondenschool_cursus_id
+LEFT JOIN rassen AS ras ON d.ras_id = ras.ras_id
+LEFT JOIN diersoort AS diersoort ON ras.diersoort_id = diersoort.diersoort_id
+	</query>
+	<group>true</group>
+	<velden>
+		<veld>
+			<naam>hw.wacht_lijst_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>diersoort.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(ras.naam,IF(d.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>d.geslacht</naam>
+			<label>Geslacht</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>hw.toevoeg_datum</naam>
+			<label>Toegevoegd</label>
+			<type>date</type>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>hc.naam</naam>
+			<label>Cursus</label>
+			<visible>true</visible>
+		</veld>
+	</velden>
+</overzichtModel>

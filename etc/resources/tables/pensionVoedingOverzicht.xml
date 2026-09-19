@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overzichtModel>
+	<naam>Overzicht Voedinglijst</naam>
+	<query><![CDATA[
+FROM (SELECT * FROM facturen AS f :f.where) AS f
+JOIN factuur_regels AS r ON f.factuur_id = r.factuur_id
+JOIN dieren AS dier ON r.dier_id = dier.dier_id
+JOIN klanten AS k ON dier.klant_id = k.klant_id
+LEFT JOIN voeding_categorien AS vc ON dier.voeding_categorie_id = vc.voeding_categorie_id
+LEFT JOIN voeding AS v ON dier.voeding_id = v.voeding_id
+LEFT JOIN rassen AS ras ON dier.ras_id = ras.ras_id
+LEFT JOIN diersoort AS soort ON ras.diersoort_id = soort.diersoort_id]]>
+	</query>
+	<velden>
+		<veld>
+			<naam>f.factuur_id</naam>
+			<label>ID</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>trim(replace(concat_ws(' ',k.naam_bedrijf,k.aanhef,k.voorletters,k.tussenvoegsel,k.achternaam),'  ',' '))</naam>
+			<label>Klant</label>
+			<visible>true</visible>
+			<order_column>k.achternaam</order_column>
+		</veld>
+		<veld>
+			<naam>k.aanhef</naam>
+			<label>Aanhef</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.voorletters</naam>
+			<label>Voorletters</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.tussenvoegsel</naam>
+			<label>Tussenvoegsel</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>k.achternaam</naam>
+			<label>Achternaam</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>dier.naam</naam>
+			<label>Dier</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>soort.naam</naam>
+			<label>Diersoort</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>concat(ras.naam,IF(dier.kruising,' (kr.)',''))</naam>
+			<label>Ras</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>IF(dier.geslacht = 'Mannelijk','M',IF(dier.geslacht = 'Vrouwelijk','V','?'))</naam>
+			<label>Geslacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>dier.gecastreerd</naam>
+			<label>Gecastreerd</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>(SELECT vacht.naam FROM dier_vachten AS vacht WHERE vacht.dier_vacht_id = dier.dier_vacht_id)</naam>
+			<label>Vacht</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>dier.kleur</naam>
+			<label>Kleur</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>IF(ISNULL(f.factuur_nummer),f.reservering_nummer,f.factuur_nummer)</naam>
+			<label>Factuurnr.</label>
+			<visible>true</visible>
+		</veld>
+        <veld>
+            <naam>f.opmerking</naam>
+            <label>Opmerkingen</label>
+            <visible>false</visible>
+            <type>multiline</type>
+        </veld>
+		<veld>
+			<naam>v.thuis_ochtend</naam>
+			<label>Thuis O</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>v.thuis_middag</naam>
+			<label>Thuis M</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>v.thuis_avond</naam>
+			<label>Thuis A</label>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>v.pension_ochtend</naam>
+			<label>Ochtend</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.pension_middag</naam>
+			<label>Middag</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.pension_avond</naam>
+			<label>Avond</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>vc.naam</naam>
+			<label>Voedingscategorie</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>v.algemeen</naam>
+			<label>Algemeen</label>
+			<visible>true</visible>
+            <type>multiline</type>
+		</veld>
+		<veld>
+			<naam>v.problemen</naam>
+			<label>Problemen</label>
+			<visible>true</visible>
+            <type>multiline</type>
+		</veld>
+		<veld>
+			<naam>v.toestand</naam>
+			<label>Toestand</label>
+			<visible>true</visible>
+            <type>multiline</type>
+		</veld>
+		<veld>
+			<naam>v.eetlust</naam>
+			<label>Eetlust</label>
+			<visible>true</visible>
+            <type>multiline</type>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_van</naam>
+			<label>Gereserveerd van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.gereserveerd_tot</naam>
+			<label>Gereserveerd tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_van</naam>
+			<label>Verbleven van</label>
+			<type>date</type>
+			<format>d MMM yyyy VM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>f.verbleven_tot</naam>
+			<label>Verbleven tot</label>
+			<type>date</type>
+			<format>d MMM yyyy NM</format>
+			<visible>false</visible>
+		</veld>
+		<veld>
+			<naam>datediff(f.gereserveerd_tot,f.gereserveerd_van)</naam>
+			<label>Nachten</label>
+            <type>integer</type>
+			<visible>false</visible>
+		</veld>
+		<veld>
+		    <naam>(SELECT group_concat(concat(s.naam, ' - ', k.kennel_nummer) ORDER BY s.naam ASC, k.kennel_nummer ASC separator '; ') AS kennels FROM kennels AS k JOIN sectoren AS s ON k.sector_id = s.sector_id JOIN kennel_verblijf AS kv ON k.kennel_id = kv.kennel_id WHERE (kv.factuur_id = f.factuur_id AND kv.dier_id = dier.dier_id))</naam>
+			<label>Kennel(s)</label>
+			<visible>true</visible>
+		</veld>
+		<veld>
+			<naam>f.hdov_id</naam>
+			<label>HDOV.nr.</label>
+			<visible>false</visible>
+		</veld>
+	</velden>
+</overzichtModel>
